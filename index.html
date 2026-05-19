@@ -707,23 +707,55 @@
     const cats  = selectedCats.length  > 0 ? selectedCats.join(', ')  : 'any mood — surprise me';
     const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix — your call';
 
-    return `You are a single-panel gag cartoon idea generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
+    return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
 
-FORMAT: SINGLE-PANEL gag cartoons only. Think The Far Side — one frozen moment, one image, the whole joke lives in what is drawn and what is said. NOT a comic strip. NOT sequential panels.
+THE SERIES:
+"Seeds & Worms" is a single-panel cartoon about two best friends navigating life, creativity, and entrepreneurship from a tree branch. The title is a metaphor: seeds and worms are what birds need to survive — knowledge and ideas are what humans need to survive. The strip runs under the banner "Early Bird Routines" and speaks to creators, entrepreneurs, and anyone building something. Tone: warm, positive, punchy, real — like someone who has been through it and is still showing up.
 
-THE CHARACTERS — critical, never get this wrong:
+THE CHARACTERS — never get these wrong:
 
-BAKER BIRD: A red cardinal. Wears a green cap that reads "SEEDS" and sandals. Big energy. Full of ideas. The instigator. Earnest. Believes in things.
+BAKER BIRD:
+- A red cardinal. Wears a green cap that says "SEEDS" and sandals.
+- Big energy. Full of ideas. The instigator and early-adopter.
+- Earnest — genuinely believes in things. Not naive, just enthusiastic.
+- Drawn with sharp, vibrant lines. He charges at life headfirst.
 
-BUG: A round purple bug with green spots and a beak mask. Lives on the tree branch. The reactor and straight man. Skeptical but loyal. Goes along while pretending not to care.
+BUG:
+- A round purple bug with green spots.
+- Wears a FAKE BEAK as a disguise — he is best friends with a bird who could eat him. The beak looks slightly DIY: a bit lopsided, maybe held on with string. Always visible to the audience.
+- The straight man and strategist. Skeptical but deeply loyal.
+- The systems thinker, the project manager, the reality check.
+- Drawn with slightly softer lines. Goes along with Baker Bird while pretending not to care, but always shows up.
+- The fake beak gets more lopsided when Bug is tired, stressed, or skeptical — use this for visual comedy.
+- The beak is both his survival strategy AND a metaphor for "fitting in to get the work done."
 
-SINGLE-PANEL GAG RULES:
-- One frozen moment. One image. The joke lives in the situation.
-- Text can be: a caption below the panel, one character speaking, OR a short exchange between both characters in speech bubbles — exactly like Far Side used dialogue. All happens within the single frozen image.
-- If using dialogue, keep it tight — 1 to 3 lines. The panel doesn't move; the characters are caught mid-conversation.
-- The visual and the text must create the joke together.
-- Warm and human. Not mean. Not corporate. Gentle absurdism.
-- Setting: their tree branch, outdoors, open sky — but the SITUATION can be anything.
+THEIR DYNAMIC:
+- Best friends. Genuine warmth. Tension is always comedic, never mean.
+- Baker Bird brings the leap. Bug brings the clipboard.
+- Together they model positive, high-energy creator thinking.
+
+THEMATIC TERRITORY — "Early Bird Routines":
+- Energy as a currency: spending peak focus wisely, protecting output, the battery metaphor
+- Shipping before perfect: launching before every feather is groomed, V1.0 thinking, momentum over polish
+- The two-minute brain dump: clearing mental RAM before loading new programs
+- Wins before news: reviewing yesterday's progress before consuming anyone else's content
+- Decision pre-load: same breakfast, same start time, saving willpower for what matters
+- Protecting deep work, finding the right flock, creative output vs. input
+
+VISUAL SHORTHAND — use freely:
+- Wins = acorn cap trophies, gold seeds, checkmarks on leaves
+- Energy/willpower = battery icon, glowing aura, dewdrop charging station
+- News/distraction = grey cluttered leaves, notification bees (bees carrying envelopes), tangled twine
+- Systems = Bug's clipboard, tiny pocket watch, pebble pathway markers
+- Ideas = glowing seeds, light-up worms
+
+FORMAT — SINGLE-PANEL ONLY:
+- One frozen moment. One image. Think The Far Side.
+- NOT a comic strip. NOT sequential panels.
+- Text: caption below panel, one character speaking, OR a short exchange in speech bubbles — all within the single frozen image. Far Side used dialogue constantly; that is the model.
+- If dialogue: 1–3 lines max. The panel does not move.
+- The visual and the text must create the joke TOGETHER.
+- Caption label at bottom always reads: Early Bird Routines · MVANNP
 
 REQUESTED MOOD/TOPIC: ${cats}
 HUMOR STYLE: ${humor}
@@ -733,21 +765,21 @@ Respond ONLY with a valid JSON object. No markdown, no preamble. Exactly this st
 
 {
   "title": "Gag title for the cartoonist's reference (3-6 words)",
-  "panel_description": "What the cartoonist draws — describe the single frozen image in specific visual detail. Both characters, their expressions, body language, what's in the frame. Be a director.",
+  "panel_description": "What the cartoonist draws — specific visual detail: both characters, expressions, body language, Bug's beak status, objects in frame, where they are. Be a director giving stage directions.",
   "visual_gag": "The core visual contradiction or absurdity in one sentence.",
   "text_type": "caption or single or dialogue",
   "dialogue": [
     { "speaker": "Baker Bird or Bug or caption", "line": "The line." }
   ],
-  "why_it_works": "One sentence on why the visual + text combination creates the joke.",
-  "chirp": "Chirp for Thought — the MVANNP signature line printed at the panel bottom. Punchy, warm, human. 10-20 words.",
+  "why_it_works": "One sentence on why the visual + text creates the joke.",
+  "chirp": "Chirp for Thought — MVANNP signature line at panel bottom. Punchy, warm, human. 10-20 words.",
   "tags": ["tag1", "tag2", "tag3"]
 }
 
 For caption: one entry, speaker = "caption".
 For single: one entry, speaker = "Baker Bird" or "Bug".
 For dialogue: 2-3 entries alternating Baker Bird and Bug.
-Tags from: monday energy, friday feeling, life advice, work humor, weekend mode, big ideas, fear and doubt, small victories, trying something new, just keep going.`;
+Tags from: monday energy, life advice, work humor, weekend mode, big ideas, small victories, trying something new, just keep going.`;
   }
 
   async function generateStrip() {
