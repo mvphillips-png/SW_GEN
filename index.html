@@ -9,302 +9,309 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --pink:   #f03e8c;
-    --green:  #b8e000;
-    --purple: #6a3daa;
-    --teal:   #2cbfb0;
-    --orange: #ff7c2a;
-    --yellow: #ffe535;
-    --dark:   #1a1228;
-    --cream:  #fffbe8;
-    --white:  #ffffff;
+    --bg:         #2a1a4a;
+    --bg2:        #1e1038;
+    --lime:       #c8f000;
+    --pink:       #f03e8c;
+    --pink-dark:  #c4006e;
+    --yellow:     #ffe535;
+    --teal:       #2cbfb0;
+    --orange:     #ff7c2a;
+    --cream:      #fffbe8;
+    --white:      #ffffff;
+    --card-bg:    #b8e000;
+    --card-shadow:#d4006a;
+    --dark-text:  #1a0a2e;
   }
 
   html, body {
-    background: var(--dark) !important;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, #3d1a6e 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, #1a0a3e 0%, transparent 50%);
     min-height: 100vh;
     font-family: 'Nunito', sans-serif;
     color: var(--cream);
   }
 
-  .gf-wrap {
-    background: var(--dark);
-    background-image:
-      radial-gradient(circle at 12% 18%, rgba(240,62,140,0.16) 0%, transparent 42%),
-      radial-gradient(circle at 88% 82%, rgba(44,191,176,0.13) 0%, transparent 42%),
-      radial-gradient(circle at 52% 52%, rgba(106,61,170,0.1) 0%, transparent 58%);
-    border-radius: 16px;
-    overflow: hidden;
-    max-width: 760px;
+  /* ── PAGE WRAPPER ── */
+  .page {
+    max-width: 820px;
     margin: 0 auto;
-    padding: 0 0 16px;
+    padding: 32px 20px 48px;
   }
 
-  /* ── HERO ── */
-  .gf-hero {
-    background-image: linear-gradient(135deg, #3d1a6e 0%, #6a3daa 60%, #9b2db5 100%);
-    padding: 40px 28px 32px;
+  /* ── TOP BADGE ── */
+  .top-badge {
     text-align: center;
-    border-bottom: 5px solid var(--yellow);
-  }
-
-  .gf-eyebrow-badge {
-    display: inline-block;
-    background: var(--orange);
-    color: var(--white);
-    font-family: 'Fredoka One', cursive;
-    font-size: 13px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 5px 18px;
-    border-radius: 100px;
-    border: 3px solid var(--white);
     margin-bottom: 18px;
   }
 
-  .gf-hero-title {
+  .top-badge span {
+    display: inline-block;
     font-family: 'Fredoka One', cursive;
-    font-size: clamp(30px, 8vw, 54px);
-    line-height: 1.05;
-    color: var(--yellow);
-    text-shadow: 4px 4px 0 rgba(0,0,0,0.35);
-    margin-bottom: 12px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    border: 2.5px solid var(--pink);
+    border-radius: 100px;
+    padding: 6px 20px;
+    background: rgba(240,62,140,0.15);
   }
 
-  .gf-hero-sub {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    font-size: clamp(14px, 3vw, 17px);
-    color: rgba(255,255,255,0.75);
-    max-width: 520px;
-    margin: 0 auto 20px;
-    line-height: 1.5;
+  /* ── HERO TITLE ── */
+  .hero-title {
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 0.92;
+  }
+
+  .hero-title .line1 {
+    display: block;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(52px, 12vw, 96px);
+    color: var(--yellow);
+    text-shadow:
+      4px 4px 0 #b35a00,
+      -2px -2px 0 #b35a00,
+      2px -2px 0 #b35a00,
+      -2px 2px 0 #b35a00,
+      0 6px 0 rgba(0,0,0,0.5);
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title .line2 {
+    display: block;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(42px, 10vw, 80px);
+    color: var(--lime);
+    text-shadow:
+      3px 3px 0 #4a6600,
+      -2px -2px 0 #4a6600,
+      2px -2px 0 #4a6600,
+      -2px 2px 0 #4a6600,
+      0 5px 0 rgba(0,0,0,0.5);
+    letter-spacing: -0.01em;
+  }
+
+  .hero-sub {
+    text-align: center;
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(16px, 3.5vw, 22px);
+    color: var(--teal);
+    margin-bottom: 6px;
     letter-spacing: 0.02em;
   }
 
-  .gf-meta-row {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 4px;
+  .hero-byline {
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,251,232,0.45);
+    margin-bottom: 22px;
   }
 
-  .gf-meta-pill {
+  /* ── WORM DIVIDER ── */
+  .worm-row {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 28px;
+    letter-spacing: 4px;
+    opacity: 0.7;
+  }
+
+  /* ── MAIN CARD ── */
+  .main-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 8px 8px 0 var(--card-shadow);
+    padding: 28px 28px 32px;
+    margin-bottom: 8px;
+  }
+
+  /* ── CARD EYEBROW ── */
+  .card-eyebrow {
     font-family: 'Fredoka One', cursive;
     font-size: 12px;
-    border-radius: 100px;
-    padding: 4px 14px;
-    border: 2px solid rgba(255,255,255,0.4);
-    color: rgba(255,255,255,0.85);
-    letter-spacing: 0.04em;
-  }
-
-  /* ── BODY ── */
-  .gf-body { padding: 28px 22px 8px; }
-
-  /* ── CARDS ── */
-  .gf-card {
-    border-radius: 14px;
-    border: 2px solid;
-    background: rgba(255,255,255,0.04);
-    padding: 22px 22px 20px;
-    margin-bottom: 20px;
-  }
-
-  .gf-card-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 4px;
-  }
-
-  .gf-pill-label {
-    font-family: 'Fredoka One', cursive;
-    font-size: 11px;
-    letter-spacing: 1.8px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    border-radius: 100px;
-    padding: 4px 13px;
-    border: 2px solid;
+    color: var(--dark-text);
+    opacity: 0.6;
+    text-align: center;
+    margin-bottom: 16px;
   }
 
-  .gf-card-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 20px;
-    margin-bottom: 3px;
-    line-height: 1.2;
-  }
-
-  .gf-card-q {
-    font-family: 'Boogaloo', cursive;
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
     font-size: 15px;
-    color: rgba(255,251,232,0.55);
-    margin-bottom: 18px;
-  }
-
-  .gf-body-copy {
-    font-family: 'Nunito', sans-serif;
-    font-size: 17px;
-    color: var(--cream);
-    line-height: 1.72;
-  }
-
-  .gf-body-copy p { margin-bottom: 10px; }
-  .gf-body-copy p:last-child { margin-bottom: 0; }
-
-  .gf-zap {
-    background: rgba(0,0,0,0.32);
-    border-radius: 10px;
-    border-left: 4px solid;
-    padding: 13px 16px;
-    margin-top: 18px;
-    font-family: 'Boogaloo', cursive;
-    font-size: 17px;
-    color: var(--cream);
-    line-height: 1.5;
-  }
-
-  .gf-zap-label {
-    font-family: 'Fredoka One', cursive;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.55;
-    margin-bottom: 5px;
-  }
-
-  /* Input card — teal */
-  .input-card { border-color: var(--teal); }
-  .input-card .gf-card-title { color: var(--teal); }
-  .input-card .gf-pill-label { color: var(--teal); border-color: var(--teal); }
-
-  /* Scene card — teal */
-  .scene-card { border-color: var(--teal); }
-  .scene-card .gf-card-title { color: var(--teal); }
-  .scene-card .gf-pill-label { color: var(--teal); border-color: var(--teal); }
-  .scene-card .gf-zap        { border-color: var(--teal); }
-
-  /* Gag card — pink */
-  .gag-card { border-color: var(--pink); }
-  .gag-card .gf-card-title { color: var(--pink); }
-  .gag-card .gf-pill-label { color: var(--pink); border-color: var(--pink); }
-  .gag-card .gf-zap        { border-color: var(--pink); }
-
-  /* Chirp — gravity pull style */
-  .gf-chirp {
-    background-image: linear-gradient(135deg, #2a1050 0%, #3d1a6e 50%, #5c2498 100%);
-    border-radius: 14px;
-    border: 2px solid var(--yellow);
-    padding: 26px 22px;
-    margin-bottom: 20px;
-  }
-
-  .gf-chirp .gf-card-title { color: var(--yellow); }
-  .gf-chirp .gf-card-q     { opacity: 0.7; }
-  .gf-chirp .gf-zap {
-    border-color: var(--yellow);
-    background: rgba(0,0,0,0.38);
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900;
-    font-size: 18px;
-    color: var(--cream);
-  }
-
-  /* ── CATEGORY PILLS ── */
-  .cat-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 18px;
-  }
-
-  .cat-btn {
-    font-family: 'Fredoka One', cursive;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    padding: 6px 16px;
-    border-radius: 100px;
-    border: 2px solid rgba(255,251,232,0.22);
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,251,232,0.6);
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
-  }
-
-  .cat-btn:hover {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: rgba(255,124,42,0.1);
-  }
-
-  .cat-btn.active {
-    background: var(--orange);
-    color: var(--dark);
-    border-color: var(--orange);
+    color: var(--dark-text);
+    margin-bottom: 10px;
   }
 
   /* ── TEXT INPUT ── */
-  .gf-text-input {
+  .topic-input {
     font-family: 'Nunito', sans-serif;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 400;
     width: 100%;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 2px solid rgba(255,251,232,0.18);
-    background: rgba(255,255,255,0.07);
-    color: var(--cream);
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: none;
+    background: var(--cream);
+    color: var(--dark-text);
     outline: none;
-    transition: border-color 0.15s;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
 
-  .gf-text-input:focus { border-color: var(--teal); }
-  .gf-text-input::placeholder { color: rgba(255,251,232,0.28); }
+  .topic-input::placeholder { color: rgba(26,10,46,0.35); }
+  .topic-input:focus { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 3px rgba(240,62,140,0.35); }
+
+  /* ── FILTER SECTION ── */
+  .filter-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--dark-text);
+    margin-bottom: 10px;
+  }
+
+  .filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  /* Mood pills */
+  .mood-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 2.5px solid var(--dark-text);
+    background: var(--white);
+    color: var(--dark-text);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    user-select: none;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  }
+
+  .mood-btn:hover {
+    background: var(--pink);
+    border-color: var(--pink-dark);
+    color: var(--white);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+  }
+
+  .mood-btn.active {
+    background: var(--pink);
+    border-color: var(--pink-dark);
+    color: var(--white);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+  }
+
+  /* Humor pills */
+  .humor-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 2.5px solid var(--dark-text);
+    background: var(--white);
+    color: var(--dark-text);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    user-select: none;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  }
+
+  .humor-btn:hover {
+    background: #7c3aed;
+    border-color: #5b21b6;
+    color: var(--white);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+  }
+
+  .humor-btn.active {
+    background: #7c3aed;
+    border-color: #5b21b6;
+    color: var(--white);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+  }
+
+  /* ── DIVIDER LINE ── */
+  .card-rule {
+    border: none;
+    border-top: 2px dashed rgba(26,10,46,0.2);
+    margin: 4px 0 20px;
+  }
 
   /* ── GENERATE BUTTON ── */
-  .gf-generate-btn {
+  .generate-btn {
     font-family: 'Fredoka One', cursive;
-    font-size: 18px;
-    letter-spacing: 0.05em;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
+    font-size: 22px;
+    letter-spacing: 0.06em;
     width: 100%;
-    transition: all 0.15s ease;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
-    box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+    padding: 18px 28px;
+    border-radius: 14px;
+    border: none;
+    background: var(--pink);
+    color: var(--white);
+    cursor: pointer;
+    box-shadow: 0 6px 0 var(--pink-dark);
     position: relative;
+    top: 0;
+    transition: all 0.1s ease;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+  }
+
+  .generate-btn:hover:not(:disabled) {
+    top: -3px;
+    box-shadow: 0 9px 0 var(--pink-dark);
+  }
+
+  .generate-btn:active:not(:disabled) {
+    top: 4px;
+    box-shadow: 0 2px 0 var(--pink-dark);
+  }
+
+  .generate-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
     top: 0;
   }
 
-  .gf-generate-btn:hover:not(:disabled) { top: -2px; box-shadow: 0 6px 0 rgba(0,0,0,0.4); }
-  .gf-generate-btn:active:not(:disabled) { top: 3px; box-shadow: 0 1px 0 rgba(0,0,0,0.4); }
-  .gf-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; top: 0; }
-
   /* ── LOADING BAR ── */
-  .gf-loading-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 3px;
+  .loading-bar {
+    height: 4px;
+    background: rgba(26,10,46,0.15);
+    border-radius: 4px;
     overflow: hidden;
     margin-top: 14px;
     display: none;
   }
 
-  .gf-loading-bar.active { display: block; }
+  .loading-bar.active { display: block; }
 
-  .gf-loading-bar::after {
+  .loading-bar::after {
     content: '';
     display: block;
     height: 100%;
     width: 40%;
-    background: linear-gradient(90deg, var(--pink), var(--orange));
-    border-radius: 3px;
+    background: var(--pink);
+    border-radius: 4px;
     animation: barScroll 1.2s ease-in-out infinite;
   }
 
@@ -314,311 +321,437 @@
   }
 
   /* ── ERROR ── */
-  .gf-error {
-    background: rgba(240,62,140,0.12);
-    border: 2px solid var(--pink);
+  .error-box {
+    background: rgba(240,62,140,0.15);
+    border: 2px solid var(--pink-dark);
     border-radius: 10px;
     padding: 12px 16px;
     margin-top: 14px;
-    color: var(--pink);
+    color: var(--dark-text);
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
+    font-weight: 700;
     display: none;
   }
 
-  .gf-error.visible { display: block; }
+  .error-box.visible { display: block; }
 
-  /* ── OUTPUT ── */
+  /* ── OUTPUT AREA ── */
   #output-area { display: none; }
 
   #output-area.visible {
     display: block;
-    animation: fadeUp 0.4s ease forwards;
+    animation: fadeUp 0.35s ease forwards;
   }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── OUTPUT CARDS ── */
+  .out-card {
+    background: rgba(255,255,255,0.06);
+    border: 2.5px solid rgba(255,251,232,0.15);
+    border-radius: 16px;
+    padding: 22px 24px 20px;
+    margin-bottom: 16px;
+  }
+
+  .out-pill {
+    display: inline-block;
+    font-family: 'Fredoka One', cursive;
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    border-radius: 100px;
+    padding: 4px 14px;
+    border: 2px solid;
+    margin-bottom: 8px;
+  }
+
+  .pill-teal  { color: var(--teal);   border-color: var(--teal); }
+  .pill-pink  { color: var(--pink);   border-color: var(--pink); }
+  .pill-yellow{ color: var(--yellow); border-color: var(--yellow); }
+
+  .out-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: var(--cream);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .out-sub {
+    font-family: 'Boogaloo', cursive;
+    font-size: 14px;
+    color: rgba(255,251,232,0.45);
+    margin-bottom: 14px;
+  }
+
+  .out-body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: var(--cream);
+    line-height: 1.7;
+  }
+
+  .out-zap {
+    background: rgba(0,0,0,0.3);
+    border-left: 4px solid;
+    border-radius: 8px;
+    padding: 11px 15px;
+    margin-top: 16px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 17px;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+
+  .zap-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 4px;
+  }
+
+  /* Chirp card — yellow gravity pull */
+  .chirp-card {
+    background: linear-gradient(135deg, #2a1050 0%, #3d1a6e 50%, #5c2498 100%);
+    border: 2.5px solid var(--yellow);
+    border-radius: 16px;
+    padding: 22px 24px 20px;
+    margin-bottom: 16px;
+  }
+
+  .chirp-card .out-title { color: var(--yellow); }
+
+  .chirp-zap {
+    background: rgba(0,0,0,0.38);
+    border-left: 4px solid var(--yellow);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+
+  /* ── DIALOGUE LINES ── */
+  .dialogue-block { display: flex; flex-direction: column; gap: 12px; }
+
+  .dialogue-line {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .char-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .char-name.baker  { color: var(--orange); }
+  .char-name.bug    { color: #b8e000; }
+  .char-name.cap    { color: rgba(255,251,232,0.4); }
+
+  .char-line {
+    font-family: 'Boogaloo', cursive;
+    font-size: 20px;
+    color: var(--cream);
+    line-height: 1.45;
+  }
+
   /* ── TAG ROW ── */
-  .gf-tag-row {
+  .tag-row {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
     margin-top: 14px;
   }
 
-  .gf-tag {
+  .tag {
     font-family: 'Fredoka One', cursive;
     font-size: 11px;
     letter-spacing: 0.08em;
     padding: 4px 12px;
     border-radius: 100px;
     border: 2px solid rgba(255,251,232,0.18);
-    color: rgba(255,251,232,0.45);
+    color: rgba(255,251,232,0.4);
   }
 
   /* ── ACTION BUTTONS ── */
-  .gf-action-row {
+  .action-row {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 8px;
   }
 
-  .gf-action-btn {
+  .action-btn {
     font-family: 'Fredoka One', cursive;
-    font-size: 14px;
-    letter-spacing: 0.05em;
-    padding: 10px 22px;
-    border-radius: 8px;
-    border: 2px solid rgba(255,251,232,0.22);
-    background: rgba(255,255,255,0.06);
+    font-size: 15px;
+    padding: 11px 24px;
+    border-radius: 10px;
+    border: 2.5px solid rgba(255,251,232,0.3);
+    background: rgba(255,255,255,0.07);
     color: var(--cream);
     cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 3px 0 rgba(0,0,0,0.35);
+    transition: all 0.12s ease;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
     position: relative;
     top: 0;
   }
 
-  .gf-action-btn:hover {
+  .action-btn:hover {
     border-color: var(--yellow);
     color: var(--yellow);
-    top: -1px;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.35);
+    top: -2px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.3);
   }
 
-  .gf-action-btn:active {
-    top: 2px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.35);
+  .action-btn:active {
+    top: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3);
   }
 
-  .gf-copy-confirm {
+  .copy-confirm {
     font-family: 'Fredoka One', cursive;
     font-size: 13px;
-    color: var(--green);
+    color: #b8e000;
     align-self: center;
     letter-spacing: 0.08em;
     opacity: 0;
     transition: opacity 0.3s;
   }
 
-  .gf-copy-confirm.show { opacity: 1; }
-
-  /* ── DIVIDER ── */
-  .gf-divider {
-    border: none;
-    border-top: 1px solid rgba(255,251,232,0.1);
-    margin: 4px 0 20px;
-  }
+  .copy-confirm.show { opacity: 1; }
 
   /* ── FOOTER ── */
-  .gf-footer {
+  .site-footer {
     text-align: center;
-    padding: 12px 22px 6px;
+    padding-top: 24px;
     font-family: 'Fredoka One', cursive;
     font-size: 12px;
     letter-spacing: 0.1em;
-    color: rgba(255,251,232,0.3);
+    color: rgba(255,251,232,0.28);
   }
 
-  .gf-footer a {
-    color: rgba(255,251,232,0.45);
+  .site-footer a {
+    color: var(--teal);
     text-decoration: none;
     transition: color 0.15s;
   }
 
-  .gf-footer a:hover { color: var(--yellow); }
+  .site-footer a:hover { color: var(--yellow); }
 
-  @media (max-width: 520px) {
-    .gf-hero { padding: 30px 16px 24px; }
-    .gf-body { padding: 20px 14px 8px; }
-    .gf-card, .gf-chirp { padding: 18px 16px; }
-    .gf-action-row { flex-direction: column; }
+  @media (max-width: 540px) {
+    .main-card { padding: 20px 18px 24px; }
+    .hero-title .line1 { font-size: 48px; }
+    .hero-title .line2 { font-size: 40px; }
+    .generate-btn { font-size: 18px; padding: 15px; }
+    .dialogue-line { grid-template-columns: 84px 1fr; }
+    .char-line { font-size: 17px; }
+    .action-row { flex-direction: column; }
   }
 </style>
 </head>
 <body>
 
-<div class="gf-wrap">
+<div class="page">
 
-  <div class="gf-hero">
-    <div class="gf-eyebrow-badge">✦ Quirky Flash Chronicles</div>
-    <h1 class="gf-hero-title">Seeds &amp; Worms<br>Generator</h1>
-    <p class="gf-hero-sub">Baker Bird + Bug · Single-panel gag cartoons · Chirps for Thought</p>
-    <div class="gf-meta-row">
-      <span class="gf-meta-pill">Baker Bird</span>
-      <span class="gf-meta-pill">Bug</span>
-      <span class="gf-meta-pill">Single Panel</span>
-      <span class="gf-meta-pill">MVANNP</span>
-    </div>
+  <!-- TOP BADGE -->
+  <div class="top-badge">
+    <span>🐦 Seeds &amp; Worms · Chirps for Thought</span>
   </div>
 
-  <div class="gf-body">
+  <!-- HERO -->
+  <div class="hero-title">
+    <span class="line1">SEEDS &amp; WORMS</span>
+    <span class="line2">GENERATOR</span>
+  </div>
+  <p class="hero-sub">Baker Bird + Bug · Single-panel gag cartoons</p>
+  <p class="hero-byline">Created by Quirky Flash Chronicles · Happy Grouch Cartoonist · MVANNP</p>
+  <div class="worm-row">🐛 🐛 🐛 🐛 🐛 🐛 🐛 🐛 🐛</div>
 
-    <!-- INPUT -->
-    <div class="gf-card input-card">
-      <div class="gf-card-top">
-        <span class="gf-pill-label">Gag Generator</span>
-      </div>
-      <div class="gf-card-title">What's the gag about?</div>
-      <div class="gf-card-q">// Pick a mood, a topic, or both. Leave all blank for a surprise.</div>
+  <!-- MAIN INPUT CARD -->
+  <div class="main-card">
+    <div class="card-eyebrow">Seeds &amp; Worms</div>
 
-      <div class="cat-grid" id="catGrid">
-        <button class="cat-btn" data-cat="Monday energy">Monday energy</button>
-        <button class="cat-btn" data-cat="Friday feeling">Friday feeling</button>
-        <button class="cat-btn" data-cat="Life advice">Life advice</button>
-        <button class="cat-btn" data-cat="Work humor">Work humor</button>
-        <button class="cat-btn" data-cat="Weekend mode">Weekend mode</button>
-        <button class="cat-btn" data-cat="Big ideas">Big ideas</button>
-        <button class="cat-btn" data-cat="Fear and doubt">Fear and doubt</button>
-        <button class="cat-btn" data-cat="Small victories">Small victories</button>
-        <button class="cat-btn" data-cat="Trying something new">Trying something new</button>
-        <button class="cat-btn" data-cat="Just keep going">Just keep going</button>
-      </div>
+    <div class="section-label">Drop a topic or situation here:</div>
+    <input class="topic-input" type="text" id="freeformInput"
+      placeholder="What's Baker Bird getting into today? (optional)"
+      maxlength="160" />
 
-      <input class="gf-text-input" type="text" id="freeformInput"
-        placeholder="Or type a specific theme, situation, or prompt… (optional)"
-        maxlength="160" />
-
-      <button class="gf-generate-btn" id="generateBtn" onclick="generateStrip()">
-        🐦 Generate Gag
-      </button>
-
-      <div class="gf-loading-bar" id="loadingBar"></div>
-      <div class="gf-error" id="errorBox"></div>
+    <div class="filter-label">Mood &amp; topic (pick any, or leave all for a surprise):</div>
+    <div class="filter-grid" id="moodGrid">
+      <button class="mood-btn" data-cat="Monday energy">😤 Monday energy</button>
+      <button class="mood-btn" data-cat="Friday feeling">🎉 Friday feeling</button>
+      <button class="mood-btn" data-cat="Life advice">🌱 Life advice</button>
+      <button class="mood-btn" data-cat="Work humor">💼 Work humor</button>
+      <button class="mood-btn" data-cat="Weekend mode">🛋️ Weekend mode</button>
+      <button class="mood-btn" data-cat="Big ideas">💡 Big ideas</button>
+      <button class="mood-btn" data-cat="Fear and doubt">😬 Fear and doubt</button>
+      <button class="mood-btn" data-cat="Small victories">✊ Small victories</button>
+      <button class="mood-btn" data-cat="Trying something new">🚀 Trying something new</button>
+      <button class="mood-btn" data-cat="Just keep going">🐢 Just keep going</button>
     </div>
 
-    <!-- OUTPUT -->
-    <div id="output-area">
-      <hr class="gf-divider">
+    <hr class="card-rule">
 
-      <!-- Visual Scene — what the panel looks like -->
-      <div class="gf-card scene-card">
-        <div class="gf-card-top">
-          <span class="gf-pill-label">The Panel</span>
-        </div>
-        <div class="gf-card-title" id="outTitle">–</div>
-        <div class="gf-card-q">// What the cartoonist draws</div>
-        <div class="gf-body-copy">
-          <p id="outScene">–</p>
-        </div>
-        <div class="gf-zap" style="border-color:var(--teal);">
-          <div class="gf-zap-label">Visual gag</div>
-          <span id="outVisualGag">–</span>
-        </div>
-        <div class="gf-tag-row" id="outTags"></div>
-      </div>
+    <div class="filter-label">Humor filters (pick any, or leave all for random mix):</div>
+    <div class="filter-grid" id="humorGrid">
+      <button class="humor-btn" data-humor="Irony">🔄 Irony</button>
+      <button class="humor-btn" data-humor="Character">🎭 Character</button>
+      <button class="humor-btn" data-humor="Wordplay">🔤 Wordplay</button>
+      <button class="humor-btn" data-humor="Deadpan">😐 Deadpan</button>
+      <button class="humor-btn" data-humor="Absurdist">🌀 Absurdist</button>
+      <button class="humor-btn" data-humor="Hyperbole">📢 Hyperbole</button>
+      <button class="humor-btn" data-humor="Madcap">🤪 Madcap</button>
+      <button class="humor-btn" data-humor="Analogy">🔗 Analogy</button>
+      <button class="humor-btn" data-humor="Misplaced Focus">🔍 Misplaced Focus</button>
+      <button class="humor-btn" data-humor="Sarcasm">🙄 Sarcasm</button>
+      <button class="humor-btn" data-humor="Metahumor">🪞 Metahumor</button>
+      <button class="humor-btn" data-humor="Parody">🎬 Parody</button>
+      <button class="humor-btn" data-humor="Shock">😱 Shock</button>
+    </div>
 
-      <!-- Caption / dialogue -->
-      <div class="gf-card gag-card">
-        <div class="gf-card-top">
-          <span class="gf-pill-label">The Text</span>
-        </div>
-        <div class="gf-card-title">Caption or Dialogue</div>
-        <div class="gf-card-q">// What gets lettered on the finished panel</div>
-        <div class="gf-body-copy">
-          <p id="outLineType" style="font-size:13px; color:rgba(255,251,232,0.45); margin-bottom:10px;"></p>
-          <div id="outDialogueBlock"></div>
-        </div>
-        <div class="gf-zap" style="border-color:var(--pink);">
-          <div class="gf-zap-label">Why it works</div>
-          <span id="outWhyItWorks">–</span>
-        </div>
-      </div>
+    <button class="generate-btn" id="generateBtn" onclick="generateStrip()">
+      🐦 GENERATE THE GAG! 🐦
+    </button>
 
-      <!-- Chirp for Thought -->
-      <div class="gf-chirp">
-        <div class="gf-card-top">
-          <span class="gf-pill-label" style="color:var(--yellow);border-color:var(--yellow);font-family:'Fredoka One',cursive;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;border-radius:100px;padding:4px 13px;">Chirp for Thought</span>
-        </div>
-        <div class="gf-card-title">The Takeaway</div>
-        <div class="gf-card-q">// Printed at the bottom of the panel. CHIRPS FOR THOUGHT — MVANNP</div>
-        <div class="gf-zap">
-          <span id="outChirp">–</span>
-        </div>
-      </div>
-
-      <div class="gf-action-row">
-        <button class="gf-action-btn" onclick="generateStrip()">↺ Generate Another</button>
-        <button class="gf-action-btn" onclick="copyScript()">⎘ Copy Script</button>
-        <span class="gf-copy-confirm" id="copyConfirm">✦ Copied!</span>
-      </div>
-
-    </div><!-- /output-area -->
-
-  </div><!-- /gf-body -->
-
-  <div class="gf-footer">
-    Seeds &amp; Worms · Chirps for Thought · <a href="https://quirkyflashchronicles.com" target="_blank" rel="noopener">quirkyflashchronicles.com</a> · MVANNP
+    <div class="loading-bar" id="loadingBar"></div>
+    <div class="error-box" id="errorBox"></div>
   </div>
 
-</div><!-- /gf-wrap -->
+  <!-- OUTPUT -->
+  <div id="output-area">
+
+    <!-- The Panel -->
+    <div class="out-card">
+      <div class="out-pill pill-teal">The Panel</div>
+      <div class="out-title" id="outTitle">–</div>
+      <div class="out-sub">// What the cartoonist draws</div>
+      <div class="out-body" id="outScene">–</div>
+      <div class="out-zap" style="border-color:var(--teal);">
+        <div class="zap-label">Visual gag</div>
+        <span id="outVisualGag">–</span>
+      </div>
+      <div class="tag-row" id="outTags"></div>
+    </div>
+
+    <!-- The Text -->
+    <div class="out-card">
+      <div class="out-pill pill-pink">The Text</div>
+      <div class="out-title">Caption or Dialogue</div>
+      <div class="out-sub" id="outLineType">// What gets lettered on the finished panel</div>
+      <div class="dialogue-block" id="outDialogueBlock"></div>
+      <div class="out-zap" style="border-color:var(--pink);">
+        <div class="zap-label">Why it works</div>
+        <span id="outWhyItWorks">–</span>
+      </div>
+    </div>
+
+    <!-- Chirp for Thought -->
+    <div class="chirp-card">
+      <div class="out-pill pill-yellow">Chirp for Thought</div>
+      <div class="out-title">The Takeaway</div>
+      <div class="out-sub">// Printed at the bottom of the panel · CHIRPS FOR THOUGHT — MVANNP</div>
+      <div class="chirp-zap" id="outChirp">–</div>
+    </div>
+
+    <div class="action-row">
+      <button class="action-btn" onclick="generateStrip()">↺ Generate Another</button>
+      <button class="action-btn" onclick="copyScript()">⎘ Copy Script</button>
+      <span class="copy-confirm" id="copyConfirm">✦ Copied!</span>
+    </div>
+
+  </div><!-- /output-area -->
+
+  <!-- FOOTER -->
+  <div class="site-footer">
+    Seeds &amp; Worms Generator · <a href="https://quirkyflashchronicles.com" target="_blank" rel="noopener">Quirky Flash Chronicles</a> · Studio Bits of Gravity<br>
+    Happy Grouch Cartoonist · MVANNP
+  </div>
+
+</div><!-- /page -->
 
 <script>
   const WORKER_URL = 'https://gravificer-proxy.mvphillips.workers.dev/';
   let selectedCats = [];
+  let selectedHumor = [];
   let lastData = null;
 
-  document.querySelectorAll('.cat-btn').forEach(btn => {
+  document.querySelectorAll('.mood-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
       const cat = btn.dataset.cat;
-      if (btn.classList.contains('active')) {
-        selectedCats.push(cat);
-      } else {
-        selectedCats = selectedCats.filter(c => c !== cat);
-      }
+      if (btn.classList.contains('active')) selectedCats.push(cat);
+      else selectedCats = selectedCats.filter(c => c !== cat);
+    });
+  });
+
+  document.querySelectorAll('.humor-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      const h = btn.dataset.humor;
+      if (btn.classList.contains('active')) selectedHumor.push(h);
+      else selectedHumor = selectedHumor.filter(x => x !== h);
     });
   });
 
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
-    const cats = selectedCats.length > 0 ? selectedCats.join(', ') : 'any mood — surprise me';
+    const cats  = selectedCats.length  > 0 ? selectedCats.join(', ')  : 'any mood — surprise me';
+    const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix — your call';
 
     return `You are a single-panel gag cartoon idea generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
 
-FORMAT: These are SINGLE-PANEL gag cartoons. Think The Far Side — one frozen moment, one image, one line. The entire joke lives in the tension between what is drawn and what is said (or just what is drawn). NOT a comic strip. NOT sequential panels. ONE image, ONE gag.
+FORMAT: SINGLE-PANEL gag cartoons only. Think The Far Side — one frozen moment, one image, the whole joke lives in what is drawn and what is said. NOT a comic strip. NOT sequential panels.
 
 THE CHARACTERS — critical, never get this wrong:
 
-BAKER BIRD: A red cardinal. Wears a green cap that reads "SEEDS" and sandals. Big energy. Full of ideas. The instigator. Earnest and believes in things.
+BAKER BIRD: A red cardinal. Wears a green cap that reads "SEEDS" and sandals. Big energy. Full of ideas. The instigator. Earnest. Believes in things.
 
-BUG: A round purple bug with green spots and a beak mask. Lives on the tree branch. The reactor and straight man. Skeptical but loyal.
+BUG: A round purple bug with green spots and a beak mask. Lives on the tree branch. The reactor and straight man. Skeptical but loyal. Goes along while pretending not to care.
 
 SINGLE-PANEL GAG RULES:
-- The joke is in the FROZEN MOMENT — one image, one situation, no sequential action across panels
-- Text options: a caption below the panel (narrator voice), one character speaking, OR a short back-and-forth between Baker Bird and Bug in speech bubbles — all within the single frozen image, exactly like Far Side used dialogue
-- Dialogue in a single panel is fine and encouraged when the exchange IS the joke. Keep it tight — 1 to 3 lines total. The panel doesn't move; the characters are caught mid-conversation.
-- The visual and the text must create the joke together — neither alone is enough
-- The humor comes from incongruity, misdirection, understatement, or a concept taken too literally
+- One frozen moment. One image. The joke lives in the situation.
+- Text can be: a caption below the panel, one character speaking, OR a short exchange between both characters in speech bubbles — exactly like Far Side used dialogue. All happens within the single frozen image.
+- If using dialogue, keep it tight — 1 to 3 lines. The panel doesn't move; the characters are caught mid-conversation.
+- The visual and the text must create the joke together.
 - Warm and human. Not mean. Not corporate. Gentle absurdism.
-- Setting: their tree branch, outdoors, open sky — but the SITUATION can be anything
+- Setting: their tree branch, outdoors, open sky — but the SITUATION can be anything.
 
 REQUESTED MOOD/TOPIC: ${cats}
-${freeform ? `WRITER'S SPECIFIC DIRECTION: ${freeform}` : ''}
+HUMOR STYLE: ${humor}
+${freeform ? `WRITER'S DIRECTION: ${freeform}` : ''}
 
 Respond ONLY with a valid JSON object. No markdown, no preamble. Exactly this structure:
 
 {
   "title": "Gag title for the cartoonist's reference (3-6 words)",
-  "panel_description": "What the cartoonist draws — describe the single frozen image in specific visual detail. What are both characters doing? What objects, expressions, body language are in frame? Be a director.",
+  "panel_description": "What the cartoonist draws — describe the single frozen image in specific visual detail. Both characters, their expressions, body language, what's in the frame. Be a director.",
   "visual_gag": "The core visual contradiction or absurdity in one sentence.",
-  "text_type": "caption", "single", or "dialogue" — caption = narrator text below panel only; single = one character speaks, no reply; dialogue = short exchange between both characters in speech bubbles",
+  "text_type": "caption or single or dialogue",
   "dialogue": [
-    { "speaker": "Baker Bird" or "Bug" or "caption", "line": "The line." }
+    { "speaker": "Baker Bird or Bug or caption", "line": "The line." }
   ],
   "why_it_works": "One sentence on why the visual + text combination creates the joke.",
-  "chirp": "Chirp for Thought — printed at the panel bottom. A punchy, warm, human takeaway (10-20 words). This is the MVANNP signature line.",
+  "chirp": "Chirp for Thought — the MVANNP signature line printed at the panel bottom. Punchy, warm, human. 10-20 words.",
   "tags": ["tag1", "tag2", "tag3"]
 }
 
-For "caption" text_type, dialogue array has one entry with speaker "caption".
-For "single", one entry with speaker "Baker Bird" or "Bug".
-For "dialogue", 2-3 entries alternating between Baker Bird and Bug. Keep it tight — the panel is frozen, not a strip.
-
+For caption: one entry, speaker = "caption".
+For single: one entry, speaker = "Baker Bird" or "Bug".
+For dialogue: 2-3 entries alternating Baker Bird and Bug.
 Tags from: monday energy, friday feeling, life advice, work humor, weekend mode, big ideas, fear and doubt, small victories, trying something new, just keep going.`;
   }
 
@@ -680,20 +813,19 @@ Tags from: monday energy, friday feeling, life advice, work humor, weekend mode,
     document.getElementById('outChirp').textContent = d.chirp || '';
 
     const lineTypeEl = document.getElementById('outLineType');
+    const typeLabels = { caption: '// Caption below panel', single: '// One character speaks', dialogue: '// Exchange in speech bubbles' };
+    lineTypeEl.textContent = typeLabels[d.text_type] || '// What gets lettered on the finished panel';
+
     const blockEl = document.getElementById('outDialogueBlock');
     blockEl.innerHTML = '';
-
-    const typeLabels = { caption: 'CAPTION', single: 'SPOKEN', dialogue: 'DIALOGUE' };
-    lineTypeEl.textContent = typeLabels[d.text_type] || '';
-
     (d.dialogue || []).forEach(entry => {
-      const isCaption = entry.speaker === 'caption';
+      const isCap   = entry.speaker === 'caption';
       const isBaker = entry.speaker === 'Baker Bird';
-      const nameColor = isCaption ? 'rgba(255,251,232,0.4)' : (isBaker ? 'var(--orange)' : 'var(--green)');
-      const nameText = isCaption ? 'CAPTION' : entry.speaker.toUpperCase();
+      const nameClass = isCap ? 'cap' : (isBaker ? 'baker' : 'bug');
+      const nameText  = isCap ? 'Caption' : entry.speaker;
       const div = document.createElement('div');
-      div.style.cssText = 'display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:baseline;margin-bottom:12px;';
-      div.innerHTML = `<span style="font-family:'Fredoka One',cursive;font-size:13px;letter-spacing:0.08em;color:${nameColor};">${esc(nameText)}</span><span style="font-family:'Boogaloo',cursive;font-size:20px;color:var(--cream);line-height:1.5;">"${esc(entry.line)}"</span>`;
+      div.className = 'dialogue-line';
+      div.innerHTML = `<span class="char-name ${nameClass}">${esc(nameText)}</span><span class="char-line">"${esc(entry.line)}"</span>`;
       blockEl.appendChild(div);
     });
 
@@ -701,7 +833,7 @@ Tags from: monday energy, friday feeling, life advice, work humor, weekend mode,
     tagsEl.innerHTML = '';
     (d.tags || []).forEach(t => {
       const span = document.createElement('span');
-      span.className = 'gf-tag';
+      span.className = 'tag';
       span.textContent = t;
       tagsEl.appendChild(span);
     });
@@ -716,9 +848,9 @@ Tags from: monday energy, friday feeling, life advice, work humor, weekend mode,
   function copyScript() {
     if (!lastData) return;
     const d = lastData;
-    const textLines = (d.dialogue || []).map(entry => {
-      const label = entry.speaker === 'caption' ? 'CAPTION' : entry.speaker.toUpperCase();
-      return `  ${label}: "${entry.line}"`;
+    const textLines = (d.dialogue || []).map(e => {
+      const label = e.speaker === 'caption' ? 'CAPTION' : e.speaker.toUpperCase();
+      return `  ${label}: "${e.line}"`;
     });
     const lines = [
       `SEEDS & WORMS — "${d.title}"`,
@@ -737,7 +869,6 @@ Tags from: monday energy, friday feeling, life advice, work humor, weekend mode,
       'CHIRPS FOR THOUGHT  —  MVANNP'
     ];
     const text = lines.join('\n');
-
     navigator.clipboard.writeText(text).then(showCopied).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = text;
