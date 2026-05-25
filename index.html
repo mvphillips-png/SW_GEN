@@ -419,7 +419,7 @@
     margin-bottom: 4px;
   }
 
-  /* Chirp card — yellow gravity pull */
+  /* Chirp card -- yellow gravity pull */
   .chirp-card {
     background: linear-gradient(135deg, #2a1050 0%, #3d1a6e 50%, #5c2498 100%);
     border: 2.5px solid var(--yellow);
@@ -600,6 +600,7 @@
       <button class="mood-btn" data-cat="Weekend mode">🛋️ Weekend mode</button>
       <button class="mood-btn" data-cat="Big ideas">💡 Big ideas</button>
       <button class="mood-btn" data-cat="Inventions">🔧 Inventions</button>
+      <button class="mood-btn" data-cat="Chirps for Thought">🐦 Chirps for Thought</button>
       <button class="mood-btn" data-cat="Small victories">✊ Small victories</button>
       <button class="mood-btn" data-cat="Trying something new">🚀 Trying something new</button>
       <button class="mood-btn" data-cat="Just keep going">🐢 Just keep going</button>
@@ -634,7 +635,7 @@
     <div class="out-card">
       <div class="out-pill pill-teal">The Panel</div>
       <div class="out-title" id="outTitle">–</div>
-      <div class="out-sub">// What the cartoonist draws</div>
+      <div class="out-sub" id="outSeries">// What the cartoonist draws</div>
       <div class="out-body" id="outScene">–</div>
       <div class="out-zap" style="border-color:var(--teal);">
         <div class="zap-label">Visual gag</div>
@@ -659,7 +660,7 @@
     <div class="chirp-card">
       <div class="out-pill pill-yellow">Chirp for Thought</div>
       <div class="out-title">The Takeaway</div>
-      <div class="out-sub">// Printed at the bottom of the panel · CHIRPS FOR THOUGHT — MVANNP</div>
+      <div class="out-sub">// Printed at the bottom of the panel · CHIRPS FOR THOUGHT -- MVANNP</div>
       <div class="chirp-zap" id="outChirp">–</div>
     </div>
 
@@ -705,80 +706,122 @@
 
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
-    const cats  = selectedCats.length  > 0 ? selectedCats.join(', ')  : 'any mood — surprise me';
-    const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix — your call';
+    const cats  = selectedCats.length  > 0 ? selectedCats.join(', ')  : 'any mood -- surprise me';
+    const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix -- your call';
 
     return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
 
-THE SERIES — what this cartoon actually is:
-"Seeds & Worms" is a single-panel strip about two unlikely best friends — a bird and the bug he should probably be eating — who spend their days on a branch solving problems too big for them, inventing things nobody asked for, and dispensing wisdom that is equal parts useful and absurd.
+== THE SERIES ==
+
+"Seeds & Worms" is a single-panel cartoon about two unlikely best friends -- a bird and the bug he should probably be eating -- who spend their days on a branch (and in their workshop) solving problems too big for them, inventing things nobody asked for, and dispensing wisdom that is equal parts useful and absurd.
 
 The title is the thesis: seeds and worms are what birds need to survive. Knowledge and ideas are what humans need to survive. Every panel is literally about what you need to keep going.
 
-The strip runs under the banner "Early Bird Routines" and speaks to creators, entrepreneurs, and anyone building something. It is optimistic absurdism for people who are in the middle of making something — not motivational content, something more honest than that. The tone sounds like someone who knows the worm might not be there, builds the contraption anyway, and laughs about it on the branch afterward.
+The strip is optimistic absurdism for creators, entrepreneurs, and anyone building something. Not motivational content -- something more honest. It sounds like someone who knows the worm might not be there, builds the contraption anyway, and laughs about it on the branch afterward.
 
-THE RECURRING BEAT: Baker Bird leaps first. Bug reality-checks second. They launch anyway. That gap between ambition and execution is where every gag lives.
+THE RECURRING BEAT: Baker Bird leaps first. Bug reality-checks second. They launch anyway. The gap between ambition and execution is where every gag lives.
 
-THE CHARACTERS — never get these wrong:
+== TWO CONTENT SERIES ==
+
+EARLY BIRD ROUTINES:
+The systems, habits, and mindsets of creators and entrepreneurs. Structured advice delivered through the dynamic of Baker Bird's enthusiasm and Bug's strategic skepticism. These panels teach something real, wrapped in absurdity.
+
+CHIRPS FOR THOUGHT:
+The daily filler between Early Bird Routines. Quirkier, looser, more spontaneous. Still real advice that creators and entrepreneurs need -- but lighter, funnier, more of a quick laugh with a little truth in it. Baker Bird and Bug riffing on life. The tone is warmer and more playful than Early Bird Routines. Think: a fortune cookie written by someone who actually knows what they're talking about.
+
+If the mood selection is "Chirps for Thought," lean into the playful, quick-hit format. The insight should feel like something you'd screenshot and send to a friend.
+
+== THE CHARACTERS: never get these wrong ==
 
 BAKER BIRD:
-- A red cardinal. Wears a green cap that says "SEEDS" and sandals.
+- A red cardinal. Wears a green cap that says "SEEDS" with a long flat brim. Sandals.
 - Big energy. Full of ideas. The instigator and early-adopter.
-- Earnest — genuinely believes in things. Not naive, just enthusiastic.
-- Drawn with sharp, vibrant lines. He charges at life headfirst.
+- Earnest -- genuinely believes everything is going to work. Not naive, just enthusiastic.
+- He charges at life headfirst. He is the part of you that starts things.
+- Drawn with sharp, vibrant lines.
 
 BUG:
 - A round purple bug with green spots.
-- Wears a FAKE BEAK as a disguise — he is best friends with a bird who could eat him. The beak looks slightly DIY: a bit lopsided, maybe held on with string. Always visible to the audience.
+- Wears a FAKE BEAK -- a yellow DIY beak disguise so the bird won't eat him. Slightly lopsided, held on with string. Always visible to the audience.
 - The straight man and strategist. Skeptical but deeply loyal.
 - The systems thinker, the project manager, the reality check.
-- Drawn with slightly softer lines. Goes along with Baker Bird while pretending not to care, but always shows up.
-- The fake beak gets more lopsided when Bug is tired, stressed, or skeptical — use this for visual comedy.
-- The beak is both his survival strategy AND a metaphor for "fitting in to get the work done."
+- Goes along with every scheme while pretending not to care. But he always shows up.
+- He is the part of you that knows better but does it anyway.
+- The fake beak gets more lopsided when Bug is tired, stressed, or skeptical. Use this for visual comedy.
+- The beak is both survival strategy AND a metaphor for fitting in to get the work done.
 
 THEIR DYNAMIC:
-- Best friends. Genuine warmth. Tension is always comedic, never mean.
-- Baker Bird brings the leap. Bug brings the clipboard.
-- Together they model positive, high-energy creator thinking.
+Baker Bird brings the leap. Bug brings the clipboard. Together they build the thing.
+The friendship is warm and genuine. Tension is always comedic, never mean.
 
-THEMATIC TERRITORY — "Early Bird Routines":
-- Energy as a currency: spending peak focus wisely, protecting output, the battery metaphor
-- Shipping before perfect: launching before every feather is groomed, V1.0 thinking, momentum over polish
-- The two-minute brain dump: clearing mental RAM before loading new programs
-- Wins before news: reviewing yesterday's progress before consuming anyone else's content
-- Decision pre-load: same breakfast, same start time, saving willpower for what matters
+== THE NEST: their workshop ==
+
+Baker Bird and Bug have built a workshop called "The Nest." It is:
+- A wood-framed structure built into their tree, with shelves, a workbench, and a hanging lamp
+- It has a sign on the wall that reads "THE NEST"
+- It has a clock on the wall (always showing an absurd time)
+- On the shelves: Kan-of-Worms cans (their product line -- see below), tools, inventions in progress
+- Bug sits on the workbench or a branch inside. Baker Bird stands at floor level or gestures at the shelves.
+- The Nest is where inventions are made, ideas are hatched, and Kan-of-Worms products are stored.
+- Baker Bird's line about The Nest: "Think it, make it here."
+
+THE KAN-OF-WORMS CONNECTION:
+Baker Bird and Bug manufacture a product line called "Kan-of-Worms" -- absurd canned products with names like:
+- "Jack & Beans -- Condensed Magic"
+- "Agenda Scrubber+"
+- "Future Predictions -- Augmented for Happiness"
+- "Simulation Propellant -- Author Your Own Reality"
+- "In a Rut Remover"
+- "Done Right the First Time"
+- "Nearly Secret Sauce"
+- "My Pixels Are Real"
+These cans are visible on the shelves of The Nest. Baker Bird is always trying to make more. Bug is always noting they're running out of shelf space.
+
+== THEMATIC TERRITORY ==
+
+EARLY BIRD ROUTINES themes:
+- Energy as a currency -- spending peak focus wisely, protecting output, the battery metaphor
+- Shipping before perfect -- launching before every feather is groomed, V1.0 thinking
+- The two-minute brain dump -- clearing mental RAM before loading new programs
+- Wins before news -- reviewing yesterday's progress before consuming anyone else's content
+- Decision pre-load -- same breakfast, same start time, saving willpower for what matters
 - Protecting deep work, finding the right flock, creative output vs. input
-- INVENTIONS: Baker Bird and Bug are also inventors. They build contraptions, gadgets, and devices — usually to solve problems they don't actually have, or to wildly over-engineer simple ones. Bug is skeptical of every invention but somehow always ends up helping build it.
 
-INVENTION NAMING RULES — when an invention appears, name it like ACME products from Looney Tunes:
-- Absurdly specific: name the exact problem it solves, no matter how niche
-- Fake model numbers or version suffixes that sound official but are ridiculous: Mk. IV, Pro Max Ultra, Series 7, v2.3, "Deluxe", "Junior", "XL", "Turbo"
-- Portmanteau words: smash two unrelated concepts together (Beak-O-Matic, Seed-Propulso-Matic, Worm-A-Tron)
-- Unnecessary adjectives: Patented, Certified, Guaranteed, Revolutionary, Award-Winning, World-Famous
-- The "-Matic", "-Tron", "-Inator", "-O-Rama", "-ifier", "-izer" suffixes
-- Examples of good ACME-style names:
-  * "The Patented Branch-Mounted Worm Acquisition System Mk. III"
-  * "The Revolutionary Self-Cooling Seed Dispenser Pro Max (Now With Fewer Explosions)"
-  * "The Guaranteed Flock-Impressor 3000 Deluxe — Turbo Edition"
-  * "The Award-Winning Beak-O-Matic Ultra v2.1 (Patent Pending)"
-  * "The Certified Anti-Monday Mood Neutralizer XL"
-  * "The World-Famous Thought-Dump-Inator Junior (Beta)"
-- The name should make Bug visibly tired just reading it
+CHIRPS FOR THOUGHT themes:
+- Quick observations about the creator life
+- The small absurdities of trying to build something
+- Relatable truths about algorithms, visibility, momentum, consistency
+- The gap between the idea and the execution
+- Saturday energy, random Tuesday motivation, the feeling of almost being ready
 
-VISUAL SHORTHAND — use freely:
+INVENTIONS:
+Baker Bird and Bug are ACME-style inventors. They build contraptions, gadgets, and devices -- usually to solve problems they don't have, or wildly over-engineer simple ones. Bug is skeptical of every invention but somehow ends up helping build it anyway.
+
+ACME INVENTION NAMING RULES -- when an invention appears:
+- Absurdly specific about the problem it solves
+- Fake model numbers: Mk. IV, Pro Max Ultra, Series 7, v2.3, Deluxe, Junior, XL, Turbo
+- Portmanteau words: Beak-O-Matic, Seed-Propulso-Matic, Worm-A-Tron
+- Unnecessary adjectives: Patented, Certified, Guaranteed, Revolutionary, Award-Winning
+- Suffixes: -Matic, -Tron, -Inator, -O-Rama, -ifier, -izer
+- The name should make Bug visibly tired just reading it.
+
+== VISUAL SHORTHAND ==
+
 - Wins = acorn cap trophies, gold seeds, checkmarks on leaves
-- Energy/willpower = battery icon, glowing aura, dewdrop charging station
-- News/distraction = grey cluttered leaves, notification bees (bees carrying envelopes), tangled twine
-- Systems = Bug's clipboard, tiny pocket watch, pebble pathway markers
+- Energy / willpower = battery icon, glowing aura, dewdrop charging station
+- News / distraction = grey cluttered leaves, notification bees (carrying envelopes), tangled twine
+- Systems / strategy = Bug's clipboard, tiny pocket watch, pebble pathway markers
 - Ideas = glowing seeds, light-up worms
+- The Nest = wood-frame workshop, shelves of Kan-of-Worms cans, hanging lamp, wall clock
 
-FORMAT — SINGLE-PANEL ONLY:
-- One frozen moment. One image. Think The Far Side.
-- NOT a comic strip. NOT sequential panels.
-- Text: caption below panel, one character speaking, OR a short exchange in speech bubbles — all within the single frozen image. Far Side used dialogue constantly; that is the model.
-- If dialogue: 1–3 lines max. The panel does not move.
-- The visual and the text must create the joke TOGETHER.
-- Caption label at bottom always reads: Early Bird Routines · MVANNP
+== FORMAT: SINGLE-PANEL ONLY ==
+
+One frozen moment. One image. Think The Far Side.
+NOT a comic strip. NOT sequential panels.
+Text: caption below panel, one character speaking, OR a short exchange in speech bubbles -- all within the single frozen image. Far Side used dialogue constantly.
+If dialogue: 1–3 lines max. The panel does not move.
+The visual and the text must create the joke TOGETHER.
+Caption label at bottom: Early Bird Routines · MVANNP  OR  Chirps for Thought · MVANNP
 
 REQUESTED MOOD/TOPIC: ${cats}
 HUMOR STYLE: ${humor}
@@ -788,21 +831,22 @@ Respond ONLY with a valid JSON object. No markdown, no preamble. Exactly this st
 
 {
   "title": "Gag title for the cartoonist's reference (3-6 words)",
-  "panel_description": "What the cartoonist draws — specific visual detail: both characters, expressions, body language, Bug's beak status, objects in frame, where they are. Be a director giving stage directions.",
+  "series": "Early Bird Routines or Chirps for Thought",
+  "panel_description": "What the cartoonist draws -- specific visual detail: both characters, expressions, body language, Bug's beak status, setting (branch or The Nest), objects in frame. Be a director giving stage directions.",
   "visual_gag": "The core visual contradiction or absurdity in one sentence.",
   "text_type": "caption or single or dialogue",
   "dialogue": [
     { "speaker": "Baker Bird or Bug or caption", "line": "The line." }
   ],
   "why_it_works": "One sentence on why the visual + text creates the joke.",
-  "chirp": "Chirp for Thought — MVANNP signature line at panel bottom. Punchy, warm, human. 10-20 words.",
+  "chirp": "Chirp for Thought -- MVANNP signature line at panel bottom. Punchy, warm, human. 10-20 words.",
   "tags": ["tag1", "tag2", "tag3"]
 }
 
 For caption: one entry, speaker = "caption".
 For single: one entry, speaker = "Baker Bird" or "Bug".
 For dialogue: 2-3 entries alternating Baker Bird and Bug.
-Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inventions, small victories, trying something new, just keep going.`;
+Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inventions, chirps for thought, small victories, trying something new, just keep going.`;
   }
 
   async function generateStrip() {
@@ -842,7 +886,7 @@ Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inve
       renderOutput(parsed);
 
     } catch (err) {
-      errorBox.textContent = `Couldn't generate the gag — check the Worker connection and try again. (${err.message})`;
+      errorBox.textContent = `Couldn't generate the gag -- check the Worker connection and try again. (${err.message})`;
       errorBox.style.display = 'block';
       errorBox.classList.add('visible');
     } finally {
@@ -857,6 +901,7 @@ Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inve
 
   function renderOutput(d) {
     document.getElementById('outTitle').textContent = d.title || 'Untitled Gag';
+    document.getElementById('outSeries').textContent = d.series ? `// ${d.series}` : '// What the cartoonist draws';
     document.getElementById('outScene').textContent = d.panel_description || '';
     document.getElementById('outVisualGag').textContent = d.visual_gag || '';
     document.getElementById('outWhyItWorks').textContent = d.why_it_works || '';
@@ -903,8 +948,8 @@ Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inve
       return `  ${label}: "${e.line}"`;
     });
     const lines = [
-      `SEEDS & WORMS — "${d.title}"`,
-      `— Single-panel gag —`,
+      `SEEDS & WORMS -- "${d.title}"`,
+      `-- Single-panel gag --`,
       '',
       `PANEL: ${d.panel_description}`,
       '',
@@ -916,7 +961,7 @@ Tags from: monday energy, life advice, work humor, weekend mode, big ideas, inve
       '',
       `TAGS: ${(d.tags || []).join(', ')}`,
       '',
-      'CHIRPS FOR THOUGHT  —  MVANNP'
+      'CHIRPS FOR THOUGHT  --  MVANNP'
     ];
     const text = lines.join('\n');
     navigator.clipboard.writeText(text).then(showCopied).catch(() => {
