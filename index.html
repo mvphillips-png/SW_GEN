@@ -589,7 +589,7 @@
 
     <div class="section-label">Drop a topic or situation here:</div>
     <input class="topic-input" type="text" id="freeformInput"
-      placeholder="What's Baker Bird getting into today? (optional)"
+      placeholder="Add a topic, situation, or question... (optional — works with any series)"
       maxlength="160" />
 
     <div class="filter-label">Pick a series (required -- pick one):</div>
@@ -597,6 +597,7 @@
       <button class="mood-btn" data-cat="Early Bird Routines">🌅 Early Bird Routines</button>
       <button class="mood-btn" data-cat="Chirps for Thought">🐦 Chirps for Thought</button>
       <button class="mood-btn" data-cat="Bird Brain Ideas">🔧 Bird Brain Ideas</button>
+      <button class="mood-btn" data-cat="Honestly Though">🤔 Honestly Though</button>
     </div>
 
     <hr class="card-rule">
@@ -704,7 +705,7 @@
 
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
-    const series = selectedSeries || 'Chirps for Thought';
+    const series = selectedSeries || 'Honestly Though';
     const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix -- your call';
 
     // Series-specific instructions
@@ -749,7 +750,24 @@ ACME INVENTION NAMING RULES -- the invention name must be:
 - Use a suffix: -Matic, -Tron, -Inator, -O-Rama, -ifier, -izer
 - Example: "The Patented Branch-Mounted Worm Acquisition System Mk. III" or "The Guaranteed Flock-Impressor 3000 Deluxe Turbo Edition"
 The caption label reads: Bird Brain Ideas -- MVANNP
-Setting: Inside The Nest workshop. Shelves of Kan-of-Worms cans visible. Baker Bird presenting the invention. Bug on the workbench looking tired.`
+Setting: Inside The Nest workshop. Shelves of Kan-of-Worms cans visible. Baker Bird presenting the invention. Bug on the workbench looking tired.`,
+
+      'Honestly Though': `
+SERIES: HONESTLY THOUGH
+This panel tackles the big, awkward, unspoken questions of life -- the ones nobody says out loud but everybody is actually thinking. Things like:
+- What are you actually supposed to do with your life?
+- Is it too late to start over?
+- What if the thing you're building never works?
+- Why does everyone else seem to have a plan?
+- What does "making it" even mean?
+- Is this whole thing a mistake or a story I'll tell later?
+- What if rest is not laziness but I still feel guilty?
+- Why is it easier to help everyone else than figure out yourself?
+The joke lives in Baker Bird delivering a confident, completely unhelpful, or unexpectedly wise answer to something nobody actually has the answer to. Bug's response either punctures it perfectly or accidentally agrees in a way that makes it worse.
+Tone: Funny first, but with a real nerve underneath. Warm, a little raw, never mean. The humor comes from the recognition -- the audience laughs because it's TRUE. Think: the thing your therapist would say if your therapist was a cartoon bird.
+The writer can add any specific life topic or question in the prompt field -- the panel should answer it honestly, badly, hilariously, or all three.
+The caption label reads: Honestly Though -- MVANNP
+Setting: The branch. Open sky. Baker Bird and Bug sitting together, possibly staring into the distance.`
     };
 
     return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
