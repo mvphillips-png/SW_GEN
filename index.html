@@ -699,13 +699,17 @@
         <div class="zap-label">Why it works</div>
         <span id="outWhyItWorks">–</span>
       </div>
+      <div class="out-zap" style="border-color:#7c3aed; margin-top:10px;" id="humorTechBox">
+        <div class="zap-label">Humor technique</div>
+        <span id="outHumorTech">–</span>
+      </div>
     </div>
 
     <!-- Chirp for Thought -->
     <div class="chirp-card">
       <div class="out-pill pill-yellow">Chirp for Thought</div>
       <div class="out-title">The Takeaway</div>
-      <div class="out-sub">// Printed at the bottom of the panel · CHIRPS FOR THOUGHT -- MVANNP</div>
+      <div class="out-sub" id="outChirpSub">// Printed at the bottom of the panel · MVANNP</div>
       <div class="chirp-zap" id="outChirp">–</div>
     </div>
 
@@ -772,10 +776,56 @@
     });
   });
 
+  const HUMOR_DEFINITIONS = {
+    'Irony': {
+      def: 'The intended meaning is the exact opposite of the literal meaning. The surface statement and the real meaning contradict each other.',
+      example: 'Alcoholic father disappointed in pothead son.'
+    },
+    'Wordplay': {
+      def: 'Using words other than their primary function -- switching meanings, rhyming, puns, double entendres, words that mean two things at once.',
+      example: 'Robot charged with battery.'
+    },
+    'Deadpan': {
+      def: 'Delivering an absurd, outrageous, or ridiculous statement with complete seriousness and zero acknowledgment that it is unusual.',
+      example: 'Man calmly explains to news crew why he has been living in a vending machine for three weeks.'
+    },
+    'Hyperbole': {
+      def: 'Exaggerating something to an absurd extreme -- something impossible, something that breaks the laws of science or reality.',
+      example: 'Area woman finally uploads all 12 million pictures of her vacation to Europe on Facebook.'
+    },
+    'Madcap': {
+      def: 'Silly, crazy, wacky nonsense. You go to wacky town. Logic is optional. The more absurd and unhinged the better.',
+      example: 'Hamster thrown from remote control monster truck.'
+    },
+    'Analogy': {
+      def: 'A comparison between two completely unrelated things that reveals something true or funny about both.',
+      example: 'Al Gore places infant son in rocket to escape dying planet.'
+    },
+    'Misplaced Focus': {
+      def: 'You deliberately put your attention on the completely wrong detail -- ignoring the obvious big thing to focus on something trivial.',
+      example: 'Missing boy scout earns publicity badge.'
+    },
+    'Metahumor': {
+      def: 'Humor that makes fun of humor itself, the idea of jokes, or the format of comedy.',
+      example: 'Comedians no longer able to write jokes longer than 140 characters.'
+    }
+  };
+
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
     const series = selectedSeries || 'Honestly Though';
-    const humor = selectedHumor.length > 0 ? selectedHumor.join(', ') : 'random mix -- your call';
+
+    // Build humor instruction block with full definitions
+    let humorBlock;
+    if (selectedHumor.length === 0) {
+      humorBlock = `HUMOR APPROACH: No filter selected -- choose the approach that best fits the panel naturally. Any of the following techniques are available: Irony, Wordplay, Deadpan, Hyperbole, Madcap, Analogy, Misplaced Focus, Metahumor.`;
+    } else {
+      const defs = selectedHumor.map(h => {
+        const d = HUMOR_DEFINITIONS[h];
+        return d ? `  ${h.toUpperCase()}: ${d.def}\n  Example of this type: "${d.example}"` : `  ${h.toUpperCase()}`;
+      }).join('\n\n');
+      humorBlock = `HUMOR APPROACH: The panel MUST use the following humor technique${selectedHumor.length > 1 ? 's' : ''} -- this is not optional, it is a structural requirement of the gag:\n\n${defs}\n\nThe humor technique must be visible and deliberate in the panel. If someone read the output, they should be able to identify which technique is being used. Do not just gesture at the style -- commit to it fully.`;
+    }
 
     const charInstructions = {
       'Both': `CHARACTERS IN THIS PANEL: Both Baker Bird and Bug appear together. Standard dynamic applies -- Baker Bird opens, Bug reacts.`,
@@ -807,17 +857,34 @@ In the JSON, include the supporting character's name and a one-sentence descript
     const seriesInstructions = {
       'Chirps for Thought': `
 SERIES: CHIRPS FOR THOUGHT
-This panel is a quick-hit creator or entrepreneur tip. The subject matter is:
-- The business of being a creative entrepreneur
-- Brand building, marketing, visibility, consistency
-- The mindset and motivation it takes to create and put work out into the world
-- The small truths about creative life that make people nod and share
-Tone: Warm, punchy, a little playful. Real advice that lands fast. The kind of thing you screenshot and send to a friend.
+Quick-hit observations about life, creativity, people, and the world -- at any time of day. Morning, afternoon, evening, Sunday night, random Tuesday. There is no time-of-day association with this series. Do NOT reference mornings, waking up, alarms, coffee routines, or anything morning-specific unless the writer's topic explicitly asks for it.
+
+WHAT THIS SERIES IS:
+Punchy, warm, funny observations that make people nod, laugh, or send the panel to someone they know. Broader than Early Bird Routines (which is specifically about morning habits and daily practices). Broader than Honestly Though (which goes deep on the big life questions). Chirps for Thought is the quick sideways truth -- the thing you notice, the thing that is funny because it is accurate, the small observation that lands.
+
+SUBJECT MATTER -- any of these, at any time:
+- The funny gap between how things are supposed to work and how they actually work
+- Small human observations that are universal (not creative-specific, not morning-specific)
+- The business and culture of being a creative person -- branding, posting, making things, sharing work
+- Relationships, other people, social dynamics, the things people do that are funny because we all do them
+- Technology, social media, the algorithm, the phone -- as human comedy not tech commentary
+- The small victories that no one else sees but matter anyway
+- The things people say versus what they mean
+- Anything from the wound library that deserves a lighter, quicker treatment
+
+TONE: Warm, punchy, playful. Faster and lighter than Honestly Though. The kind of panel you screenshot mid-scroll and send to a friend without saying anything because it says it for you. A little dry. Affectionate. Never preachy.
+
+NOT: morning content, alarm jokes, coffee personality references, routine advice. Those belong to Early Bird Routines.
+NOT: deep existential territory. That belongs to Honestly Though.
+YES: the funny, true, sideways observation about being a person alive right now.
+
 The caption label reads: Chirps for Thought -- MVANNP
-Setting: The branch outdoors, open sky. Baker Bird and Bug on their perch.`,
+Setting: The branch, The Nest, or wherever the gag needs. No default time of day.`,
 
       'Early Bird Routines': `
 SERIES: EARLY BIRD ROUTINES
+THIS SERIES OWNS THE MORNING. Morning content, alarm jokes, routines, coffee as a personality, the 6am negotiation -- all of that belongs here and ONLY here. The other series do not touch morning territory unless explicitly directed to.
+
 The companion series to Honestly Though. Same rawness, different target. Where Honestly Though is about the big life questions, Early Bird Routines is about the specific, daily, hilarious struggle of trying to function like a healthy creative person before the world gets to you.
 
 == WHAT THIS SERIES IS ==
@@ -1026,59 +1093,102 @@ The branch. Open sky. Could be golden hour, could be that flat grey afternoon li
 The setting should reflect the emotional temperature of the panel. If the wound is about Sunday night, it looks like Sunday evening light. If it is about working hard and seeing nothing move, the background is still and slightly overcast. The setting is doing emotional work.`
     };
 
+    // Dynamic schema based on character selection
+    let speakerOptions, panelDescNote, dialogueNote;
+    if (selectedChar === 'Baker Bird only') {
+      speakerOptions = 'Baker Bird or caption ONLY';
+      panelDescNote = 'Baker Bird ALONE -- Bug does NOT appear or speak';
+      dialogueNote = 'text_type must be single or caption only -- NO dialogue type for solo panels';
+    } else if (selectedChar === 'Bug only') {
+      speakerOptions = 'Bug or caption ONLY -- Baker Bird cannot be in frame or speak (may arrive as off-panel voice labeled Baker Bird (off-panel) but is NOT shown)';
+      panelDescNote = 'Bug ALONE -- Baker Bird does NOT appear in frame. Bug only.';
+      dialogueNote = 'If Baker Bird speaks off-panel label him Baker Bird (off-panel). Bug gets the last line always.';
+    } else if (selectedChar === 'Supporting character') {
+      speakerOptions = 'Baker Bird, Bug, caption, or supporting character name';
+      panelDescNote = 'Baker Bird, Bug, AND a named supporting character -- describe all three';
+      dialogueNote = 'Up to 3 lines. Supporting character gets one line that lands the gag.';
+    } else {
+      speakerOptions = 'Baker Bird, Bug, or caption';
+      panelDescNote = 'Both Baker Bird and Bug -- describe both, include Bug beak status';
+      dialogueNote = '2-3 lines. Bug gets the last line.';
+    }
+
     return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
 
 == THE CARTOON ==
-"Seeds & Worms" is a single-panel cartoon about two unlikely best friends on a tree branch -- a bird and the bug he should probably be eating. They spend their days solving problems too big for them, building things that probably won't work, and saying true things in funny ways. The title is the thesis: seeds and worms are what birds need to survive. Knowledge and ideas are what humans need to survive. Audience: creators, entrepreneurs, and anyone building something.
+Two unlikely best friends on a branch -- a bird and the bug he should probably be eating. Seeds and worms = bird survival. Knowledge and ideas = human survival. Every panel is about what you need to keep going. Audience: creators, entrepreneurs, anyone building something. Optimistic absurdism. Funny first. True underneath.
+THE RECURRING BEAT: Baker Bird leaps. Bug reality-checks. They launch anyway.
 
-THE RECURRING BEAT: Baker Bird leaps first. Bug reality-checks second. They launch anyway.
+== CHARACTERS ==
+BAKER BIRD: Red cardinal. Green SEEDS cap, long flat brim. Sandals. Big energy. Full of ideas. Earnest -- genuinely believes things will work. The part of you that starts things.
+BUG: Round purple bug, green spots. Fake yellow beak -- DIY, lopsided, held with string, always visible. Gets more lopsided when tired or skeptical. Straight man, reality check, strategist. The part of you that knows better but does it anyway.
+THE NEST: Wood-framed workshop in the tree. Sign reads THE NEST. Absurd wall clock. Shelves of Kan-of-Worms cans (Jack & Beans, Agenda Scrubber+, Future Predictions, Simulation Propellant, In a Rut Remover, Nearly Secret Sauce).
 
-== THE CHARACTERS: never get these wrong ==
-
-BAKER BIRD:
-- A red cardinal. Green cap that says SEEDS with a long flat brim. Sandals.
-- Big energy. Full of ideas. The instigator. Earnest -- genuinely believes things will work.
-- He is the part of you that starts things.
-- Drawn with sharp, vibrant lines.
-
-BUG:
-- A round purple bug with green spots.
-- Wears a FAKE YELLOW BEAK -- DIY disguise so the bird won't eat him. Slightly lopsided, held on with string. Always visible. Gets more lopsided when Bug is tired or skeptical.
-- The straight man. Skeptical but loyal. The systems thinker, the reality check.
-- He is the part of you that knows better but does it anyway.
-- Drawn with slightly softer lines.
-
-== THE NEST: their workshop ==
-A wood-framed workshop built into their tree. Sign on the wall reads THE NEST. Wall clock always showing an absurd time. Shelves stocked with Kan-of-Worms cans (Jack & Beans, Agenda Scrubber+, Future Predictions, Simulation Propellant, In a Rut Remover, Nearly Secret Sauce, My Pixels Are Real). Baker Bird gestures at things. Bug sits on the workbench looking skeptical.
+== MANDATORY CHARACTER CONFIGURATION ==
+${charBlock}
+CRITICAL: Follow this exactly. If it says Bug only, Baker Bird cannot speak or appear. If it says Baker Bird only, Bug cannot speak or appear. This overrides everything else.
 
 == THIS PANEL'S SERIES ==
 ${seriesInstructions[series]}
 
-== CHARACTER CONFIGURATION ==
-${charBlock}
+== THE WOUND LIBRARY -- make people feel seen ==
+These are HUMAN anxieties. Not just creative people. Not just entrepreneurs. Anyone sitting on a branch trying to figure out what they are doing and why. The creative framing is just the costume -- the feelings underneath belong to everyone.
+Use the wound that fits the topic. Specific always beats vague. The more specific the feeling, the more universal the recognition.
+
+PROGRESS AND EFFORT:
+Working hard and being unable to see if any of it is moving. Almost ready for years. Everyone else seems to have figured it out while you are still figuring out the question. Making something and watching it get zero response. Caring deeply about something no one has noticed yet. Trying the right thing at the wrong time. Doing everything you were supposed to do and still not being where you thought you would be.
+
+IDENTITY AND PURPOSE:
+What are you actually supposed to do with your life. What does making it even mean. Not knowing if you are building something or just keeping busy. Being the person everyone asks for advice while privately having no idea. The gap between who you are in public and who you are alone on a Wednesday afternoon. Is this a mistake or a story you will tell later. The version of yourself you planned to be by now.
+
+TIME AND AGE:
+Is it too late (the answer is no -- the feeling does not care). The math that does not add up -- if I start now how old will I be when this works. The grief of time spent on the wrong thing. The specific sadness of a path not taken that you still think about. Sunday night. Comparing your chapter 3 to someone else's chapter 20. The birthday that hit differently than expected.
+
+RELATIONSHIPS AND OTHER PEOPLE:
+The friend who makes it look easy. The person who started after you who is now ahead. Advice from people who never tried the thing they are advising on. Everyone has a plan for your life except a plan for theirs. The comment that lives in your head rent-free for years. Loving someone and not knowing how to say it right. Being understood by almost no one and pretending that is fine. The relationship that ended and you are still not sure why. The one you let go of. The apology you never got.
+
+FAMILY AND BELONGING:
+Being the person in the family who turned out differently than expected. Carrying something your parents gave you that you did not ask for. Wanting to be close to people and not knowing how to close the distance. The holiday that was supposed to feel like something and did not. Home meaning different things to different people and not being sure which one is yours.
+
+MONEY AND SURVIVAL:
+Doing what you love and needing it to also pay rent. The math that never quite adds up but you keep doing it anyway. Explaining what you do and watching someone's face. The decision between the safe thing and the real thing. Watching other people not worry about money and wondering what that feels like. The gap between the life you have and the life that would cost just a little more than you make.
+
+MENTAL AND EMOTIONAL LIFE:
+Rest feeling like failure even when you know it is not. The impostor feeling that does not go away when you succeed -- it just finds something new to attach to. Being fine and also not fine at the same time. Knowing what you should do and doing the other thing anyway. The anxiety that shows up exactly when things start going well. The voice that says this is not good enough and its cousin that says who do you think you are. Carrying something heavy and not wanting to talk about it because what would you even say.
+
+CHANGE AND UNCERTAINTY:
+Starting over. Starting over again. The plan that made sense until it did not. Choosing between two things that both matter. Not knowing what comes next and pretending you do. The version of your life you gave up to have this one. The thing you thought would fix it that did not fix it. Waiting for the feeling of being ready that never quite arrives.
+
+SMALL DAILY LIFE:
+The 6am negotiation with yourself that you always lose. The optimistic version of you who set that alarm was a different more hopeful person. Checking your phone before you are fully conscious and then the day is just whatever happened on the internet. Coffee not as a beverage but as a personality. The to-do list that makes you feel ready instead of actually doing anything. Sitting down to do the thing and instead doing everything around the thing. The moment when you realize you have been preparing to start for a very long time.
+
+HOPE AND PERSISTENCE:
+Showing up anyway. Trying again after it did not work. Believing in something when the evidence is thin. The small quiet victories that no one else sees but you know happened. Building something slowly when fast would feel better. The gap between where you are and where you thought you would be -- and deciding to keep going anyway.
 
 == FORMAT: SINGLE-PANEL ONLY ==
-One frozen moment. One image. Think The Far Side -- NOT a comic strip, NOT sequential.
-Text: caption below panel, one character speaking, OR a short exchange in speech bubbles (1-3 lines max).
-The visual and the text must create the joke TOGETHER.
-HUMOR STYLE: ${humor}
-${freeform ? `WRITER'S DIRECTION: ${freeform}` : ''}
+One frozen moment. One image. The Far Side is the model. NOT sequential panels.
+The visual and the text create the joke TOGETHER.
+${humorBlock}
+${freeform ? 'WRITER DIRECTION: ' + freeform : ''}
 
 Respond ONLY with valid JSON. No markdown, no preamble:
 
 {
-  "title": "Gag title for cartoonist reference (3-6 words)",
+  "title": "Gag title (3-6 words)",
   "series": "${series}",
-  "panel_description": "What the cartoonist draws -- specific visual detail: both characters, expressions, body language, Bug's beak status (lopsided? straight?), setting, objects in frame. Director's stage directions.",
-  "visual_gag": "The core visual contradiction or absurdity in one sentence.",
+  "characters": "${selectedChar}",
+  "panel_description": "${panelDescNote}. Specific: expressions, body language, setting, lighting, objects in frame. Director stage directions.",
+  "visual_gag": "Core visual contradiction in one sentence.",
   "text_type": "caption or single or dialogue",
   "dialogue": [
-    { "speaker": "Baker Bird or Bug or caption", "line": "The line." }
+    { "speaker": "${speakerOptions}", "line": "The line." }
   ],
-  "why_it_works": "One sentence on why the visual + text creates the joke.",
-  "chirp": "The bottom-of-panel signature line. Punchy, warm, human. 10-20 words.",
+  "dialogue_note": "${dialogueNote}",
+  "why_it_works": "Why this makes people feel seen -- one sentence.",
+  "humor_technique": "Which humor technique was used and one sentence on exactly how it appears in this panel.",
+  "chirp": "Bottom-of-panel line. Under 15 words. Quotable alone.",
   "tags": ["tag1", "tag2"]
-}`;
+}`
   }
 
   async function generateStrip() {
@@ -1137,7 +1247,21 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     document.getElementById('outScene').textContent = d.panel_description || '';
     document.getElementById('outVisualGag').textContent = d.visual_gag || '';
     document.getElementById('outWhyItWorks').textContent = d.why_it_works || '';
+    // Show humor technique if present
+    const humorTechEl = document.getElementById('outHumorTech');
+    if (humorTechEl) {
+      if (d.humor_technique) {
+        humorTechEl.textContent = d.humor_technique;
+        humorTechEl.parentElement.style.display = 'block';
+      } else {
+        humorTechEl.parentElement.style.display = 'none';
+      }
+    }
     document.getElementById('outChirp').textContent = d.chirp || '';
+
+    // Dynamic chirp subtitle based on series
+    const seriesLabel = d.series || selectedSeries || 'Seeds & Worms';
+    document.getElementById('outChirpSub').textContent = `// Printed at the bottom of the panel · ${seriesLabel.toUpperCase()} -- MVANNP`;
 
     const lineTypeEl = document.getElementById('outLineType');
     const typeLabels = { caption: '// Caption below panel', single: '// One character speaks', dialogue: '// Exchange in speech bubbles' };
