@@ -601,6 +601,157 @@
     .char-line { font-size: 17px; }
     .action-row { flex-direction: column; }
   }
+
+  /* ════════════════════════════════════════════════════
+     BIZARRE MODE  — separate, contained section.
+     Its own toggle, card, state, prompt, output. Nothing
+     here shares state with Seeds & Worms.
+     ════════════════════════════════════════════════════ */
+
+  /* ── MODE TOGGLE ── */
+  .mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .mode-tab {
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    padding: 11px 26px;
+    border-radius: 100px;
+    border: 2.5px solid rgba(255,251,232,0.2);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,251,232,0.55);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+    position: relative; top: 0;
+  }
+  .mode-tab:hover { top: -2px; box-shadow: 0 6px 0 rgba(0,0,0,0.3); color: var(--cream); }
+  .mode-tab.active {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--dark-text);
+    box-shadow: 0 4px 0 #4a6600;
+  }
+  .mode-tab.bz.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--dark-text);
+    box-shadow: 0 4px 0 #a8430a;
+  }
+
+  /* ── BIZARRE MODE WRAPPER ── */
+  #bizarre-mode { display: none; }
+  #bizarre-mode.active { display: block; }
+
+  /* The bizarre card -- a deliberately different world */
+  .bz-card {
+    background: #f4ecd8;
+    background-image: repeating-linear-gradient(0deg, transparent 0 26px, rgba(20,17,13,0.04) 26px 27px);
+    border-radius: 20px;
+    box-shadow: 8px 8px 0 var(--orange);
+    padding: 28px 28px 32px;
+    margin-bottom: 8px;
+    position: relative;
+    color: #1a140d;
+  }
+  .bz-card::before {
+    content: "FILED UNDER: UNEXPLAINED";
+    position: absolute; top: 0; right: 20px;
+    transform: translateY(-50%) rotate(-2deg);
+    background: #1a140d; color: #f4ecd8;
+    font-family: 'Fredoka One', cursive;
+    font-size: 10px; letter-spacing: 2px;
+    padding: 5px 12px; border-radius: 4px;
+  }
+  .bz-eyebrow {
+    font-family: 'Fredoka One', cursive;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #1a140d; opacity: 0.55; text-align: center; margin-bottom: 16px;
+  }
+  .bz-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: #1a140d; margin-bottom: 10px; }
+  .bz-label .hint { font-weight: 400; opacity: 0.55; }
+  .bz-input {
+    font-family: 'Nunito', sans-serif; font-size: 16px;
+    width: 100%; padding: 14px 18px; border-radius: 12px;
+    border: 2.5px solid rgba(26,20,13,0.25); background: #fffdf6; color: #1a140d;
+    outline: none; margin-bottom: 18px; resize: vertical; min-height: 70px;
+  }
+  .bz-input::placeholder { color: rgba(26,20,13,0.4); }
+  .bz-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,124,42,0.25); }
+
+  .bz-btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .bz-gen-btn {
+    flex: 1 1 auto;
+    font-family: 'Fredoka One', cursive; font-size: 20px; letter-spacing: 0.04em;
+    padding: 16px 24px; border-radius: 14px; border: none;
+    background: var(--orange); color: #fff; cursor: pointer;
+    box-shadow: 0 6px 0 #a8430a; position: relative; top: 0;
+    transition: all 0.1s ease; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  }
+  .bz-gen-btn:hover:not(:disabled) { top: -3px; box-shadow: 0 9px 0 #a8430a; }
+  .bz-gen-btn:active:not(:disabled) { top: 4px; box-shadow: 0 2px 0 #a8430a; }
+  .bz-gen-btn:disabled { opacity: 0.55; cursor: not-allowed; top: 0; }
+  .bz-dice-btn {
+    flex: 0 0 auto;
+    font-family: 'Fredoka One', cursive; font-size: 17px;
+    padding: 16px 22px; border-radius: 14px;
+    border: 2.5px solid #1a140d; background: #fffdf6; color: #1a140d; cursor: pointer;
+    box-shadow: 0 6px 0 rgba(26,20,13,0.4); position: relative; top: 0; transition: all 0.1s ease;
+  }
+  .bz-dice-btn:hover:not(:disabled) { top: -3px; box-shadow: 0 9px 0 rgba(26,20,13,0.4); }
+  .bz-dice-btn:active:not(:disabled) { top: 4px; box-shadow: 0 2px 0 rgba(26,20,13,0.4); }
+  .bz-dice-btn:disabled { opacity: 0.55; cursor: not-allowed; top: 0; }
+
+  .bz-loading-bar { height: 4px; background: rgba(26,20,13,0.15); border-radius: 4px; overflow: hidden; margin-top: 14px; display: none; }
+  .bz-loading-bar.active { display: block; }
+  .bz-loading-bar::after { content:''; display:block; height:100%; width:40%; background: var(--orange); border-radius:4px; animation: barScroll 1.2s ease-in-out infinite; }
+  .bz-error { background: rgba(255,124,42,0.18); border: 2px solid #a8430a; border-radius: 10px; padding: 12px 16px; margin-top: 14px; color: #1a140d; font-family:'Nunito'; font-weight:700; font-size:14px; display:none; }
+  .bz-error.visible { display: block; }
+
+  /* Bizarre output */
+  #bz-output-area { display: none; }
+  #bz-output-area.visible { display: block; animation: fadeUp 0.35s ease forwards; }
+  .bz-out-card {
+    background: #f4ecd8;
+    background-image: repeating-linear-gradient(0deg, transparent 0 26px, rgba(20,17,13,0.04) 26px 27px);
+    border: 3px solid #1a140d; border-radius: 16px;
+    padding: 0; margin-bottom: 16px; overflow: hidden; color: #1a140d;
+  }
+  .bz-out-title {
+    font-family: 'Fredoka One', cursive; font-size: 22px;
+    background: #1a140d; color: #f4ecd8; padding: 12px 18px; letter-spacing: 0.02em;
+  }
+  .bz-out-body { font-family: 'Nunito', sans-serif; font-size: 16px; line-height: 1.6; padding: 18px; }
+  .bz-out-body .lab { display:block; font-family:'Fredoka One',cursive; font-size:11px; letter-spacing:2px; text-transform:uppercase; opacity:0.55; margin-bottom:6px; }
+  .bz-out-caption {
+    font-family: 'Boogaloo', cursive; font-size: 22px; line-height: 1.4;
+    text-align: center; padding: 22px 18px; border-top: 2px dashed rgba(26,20,13,0.3);
+  }
+  .bz-tag-row { display:flex; flex-wrap:wrap; gap:7px; padding: 0 18px 18px; }
+  .bz-tag { font-family:'Fredoka One',cursive; font-size:11px; letter-spacing:0.08em; padding:4px 12px; border-radius:100px; border:2px solid rgba(26,20,13,0.3); color: rgba(26,20,13,0.6); }
+
+  .bz-action-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 8px; }
+  .bz-action-btn {
+    font-family:'Fredoka One',cursive; font-size:15px; padding:11px 24px; border-radius:10px;
+    border:2.5px solid rgba(255,251,232,0.3); background: rgba(255,255,255,0.07); color: var(--cream);
+    cursor:pointer; transition: all 0.12s ease; box-shadow: 0 4px 0 rgba(0,0,0,0.3); position:relative; top:0;
+  }
+  .bz-action-btn:hover { border-color: var(--orange); color: var(--orange); top:-2px; box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
+  .bz-action-btn:active { top:3px; box-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+  .bz-copy-confirm { font-family:'Fredoka One',cursive; font-size:13px; color: var(--orange); align-self:center; letter-spacing:0.08em; opacity:0; transition: opacity 0.3s; }
+  .bz-copy-confirm.show { opacity: 1; }
+
+  @media (max-width: 540px) {
+    .bz-card { padding: 20px 18px 24px; }
+    .bz-gen-btn { font-size: 17px; }
+    .bz-btn-row { flex-direction: column; }
+    .bz-action-row { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
@@ -620,6 +771,15 @@
   <p class="hero-sub">Baker Bird + Bug · Single-panel gag cartoons</p>
   <p class="hero-byline">Created by Quirky Flash Chronicles · Happy Grouch Cartoonist · MVANNP</p>
   <div class="worm-row">🐛 🐛 🐛 🐛 🐛 🐛 🐛 🐛 🐛</div>
+
+  <!-- MODE TOGGLE -->
+  <div class="mode-toggle">
+    <button class="mode-tab active" id="modeSW" onclick="setMode('sw')">🐦 Seeds &amp; Worms</button>
+    <button class="mode-tab bz" id="modeBZ" onclick="setMode('bizarre')">🌀 Bizarre</button>
+  </div>
+
+  <!-- ════════ SEEDS & WORMS MODE ════════ -->
+  <div id="sw-mode">
 
   <!-- MAIN INPUT CARD -->
   <div class="main-card">
@@ -720,6 +880,48 @@
     </div>
 
   </div><!-- /output-area -->
+
+  </div><!-- /sw-mode -->
+
+  <!-- ════════ BIZARRE MODE ════════ -->
+  <div id="bizarre-mode">
+
+    <div class="bz-card">
+      <div class="bz-eyebrow">Bizarre · Single-Panel Non-Sequiturs</div>
+
+      <div class="bz-label">Your idea <span class="hint">(optional — or hit Surprise Me)</span></div>
+      <textarea class="bz-input" id="bzInput" maxlength="200"
+        placeholder="e.g. a snail filing a noise complaint · penguins at a timeshare seminar · Magellan lost in a parking garage"></textarea>
+
+      <div class="bz-btn-row">
+        <button class="bz-gen-btn" id="bzGenerateBtn" onclick="bzGenerate(false)">DEVELOP THE PANEL</button>
+        <button class="bz-dice-btn" id="bzDiceBtn" onclick="bzGenerate(true)">🎲 Surprise Me</button>
+      </div>
+
+      <div class="bz-loading-bar" id="bzLoadingBar"></div>
+      <div class="bz-error" id="bzErrorBox"></div>
+    </div>
+
+    <!-- BIZARRE OUTPUT -->
+    <div id="bz-output-area">
+      <div class="bz-out-card">
+        <div class="bz-out-title" id="bzOutTitle">–</div>
+        <div class="bz-out-body">
+          <span class="lab">The Panel</span>
+          <span id="bzOutScene">–</span>
+        </div>
+        <div class="bz-out-caption" id="bzOutCaption">–</div>
+        <div class="bz-tag-row" id="bzOutTags"></div>
+      </div>
+
+      <div class="bz-action-row">
+        <button class="bz-action-btn" onclick="bzGenerate(false)">↺ Another</button>
+        <button class="bz-action-btn" onclick="bzCopyScript()">⎘ Copy Script</button>
+        <span class="bz-copy-confirm" id="bzCopyConfirm">✦ Copied!</span>
+      </div>
+    </div>
+
+  </div><!-- /bizarre-mode -->
 
   <!-- FOOTER -->
   <div class="site-footer">
@@ -1334,6 +1536,202 @@ Respond ONLY with valid JSON. No markdown, no preamble:
 
   function showCopied() {
     const el = document.getElementById('copyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  /* ════════════════════════════════════════════════════
+     BIZARRE MODE  — fully self-contained below this line.
+     Shares only WORKER_URL. No S&W state, prompt, or render.
+     ════════════════════════════════════════════════════ */
+
+  function setMode(mode) {
+    const sw = document.getElementById('sw-mode');
+    const bz = document.getElementById('bizarre-mode');
+    const tabSW = document.getElementById('modeSW');
+    const tabBZ = document.getElementById('modeBZ');
+    if (mode === 'bizarre') {
+      sw.style.display = 'none';
+      bz.classList.add('active');
+      tabBZ.classList.add('active');
+      tabSW.classList.remove('active');
+    } else {
+      sw.style.display = 'block';
+      bz.classList.remove('active');
+      tabSW.classList.add('active');
+      tabBZ.classList.remove('active');
+    }
+  }
+
+  let bzLastData = null;
+
+  const BZ_SEEDS = [
+    "earthworms holding a corporate retreat",
+    "an owl that has been on hold with a bank since 1981",
+    "a marine biologist who hasn't noticed the squid is taking notes on him",
+    "two aliens arguing over assembling flat-pack furniture in deep space",
+    "Cleopatra defeated by a self-checkout machine",
+    "a colony of ants running a lost-and-found",
+    "a physicist whose chalkboard proof is being corrected by a pigeon",
+    "an alien tourist who only wants to find a working restroom",
+    "Beethoven, but the only instrument available is a leaf blower",
+    "a snail that has filed for early retirement",
+    "moths attending a fire-safety seminar",
+    "a mission control room realizing the rover has unionized",
+    "Genghis Khan stuck behind a velvet rope at a museum about himself",
+    "a beetle giving a keynote to extremely uninterested beetles",
+    "deep-sea anglerfish enforcing assigned parking",
+    "a duck incorrectly cc'd on every office email since spring",
+    "a tortoise who has been mid-escape for eleven years",
+    "pigeons running an unlicensed weather service",
+    "a dung beetle reviewing its life choices at a roundabout",
+    "Isaac Newton, but the apples have organized"
+  ];
+
+  function bzBuildPrompt(idea) {
+    const seed = idea
+      ? `Build the panel from this seed: ${idea}`
+      : `Build a completely fresh panel. Choose any of the four wells.`;
+
+    return `You are a single-panel gag cartoonist working entirely in the spirit of Gary Larson's The Far Side.
+
+Produce ONE surreal, non-sequitur single-panel cartoon concept.
+
+RULES OF THE FORM:
+- No setup-then-punchline structure. Drop the viewer straight into an absurd situation already in progress.
+- The caption is a SINGLE deadpan line that adds an unexpected twist or reframe -- it must NOT explain the visual.
+- Treat the impossible as utterly mundane and bureaucratic. The humor is in the flatness.
+- Favor these wells: the secret lives of animals (birds, worms, insects), oblivious scientists, aliens defeated by ordinary chores, and historical figures stranded in trivial modern situations.
+- Specific beats vague. Name a Tuesday, a hose attachment, a dryer cycle, a model number.
+
+HARD CONSTRAINTS (never break these):
+- This is a STANDALONE cartoon. Invent fresh subjects every single time.
+- NEVER use any recurring character, mascot, or running cast.
+- This has NOTHING to do with Seeds & Worms. NEVER reference a baker bird, a cardinal, a worm character, a bug character, a fake yellow beak, a nest, a workshop, "Kan-of-Worms," seeds, founders, entrepreneurs, creatives, or building products. None of that exists in this world.
+- No two-character witty banter, no reality-check dynamic, no back-and-forth dialogue. At most one deadpan caption line.
+- Do NOT make it warm, motivational, or "make people feel seen." It is cold, strange, and funny.
+
+${seed}
+
+Respond ONLY with valid JSON. No markdown, no preamble:
+
+{
+  "title": "filed-report style title (3-6 words)",
+  "panel_description": "one vivid sentence describing the single frozen panel -- subjects, expressions, setting, the one absurd detail",
+  "caption": "the single deadpan caption line (no quotation marks inside)",
+  "theme": "one of: animals | scientists | aliens | history",
+  "tags": ["tag1", "tag2"]
+}`;
+  }
+
+  async function bzGenerate(random) {
+    const btn = document.getElementById('bzGenerateBtn');
+    const dice = document.getElementById('bzDiceBtn');
+    const loadingBar = document.getElementById('bzLoadingBar');
+    const errorBox = document.getElementById('bzErrorBox');
+    const inputEl = document.getElementById('bzInput');
+
+    let idea = (inputEl.value || '').trim();
+    if (random) {
+      idea = BZ_SEEDS[Math.floor(Math.random() * BZ_SEEDS.length)];
+      inputEl.value = idea;
+    }
+
+    btn.disabled = true; dice.disabled = true;
+    loadingBar.classList.add('active');
+    errorBox.classList.remove('visible');
+    errorBox.style.display = 'none';
+
+    try {
+      const response = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: bzBuildPrompt(idea) }]
+        })
+      });
+
+      if (!response.ok) throw new Error(`Worker error ${response.status}`);
+
+      const data = await response.json();
+      let raw = '';
+      if (data.content && Array.isArray(data.content)) {
+        raw = data.content.map(b => b.text || '').join('');
+      } else if (typeof data.content === 'string') {
+        raw = data.content;
+      }
+
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      bzLastData = parsed;
+      bzRenderOutput(parsed);
+
+    } catch (err) {
+      errorBox.textContent = `The panel refused to develop -- check the Worker connection and try again. (${err.message})`;
+      errorBox.style.display = 'block';
+      errorBox.classList.add('visible');
+    } finally {
+      btn.disabled = false; dice.disabled = false;
+      loadingBar.classList.remove('active');
+    }
+  }
+
+  function bzRenderOutput(d) {
+    document.getElementById('bzOutTitle').textContent = d.title || 'Untitled Incident';
+    document.getElementById('bzOutScene').textContent = d.panel_description || '';
+    const cap = (d.caption || '').replace(/^["“]|["”]$/g, '');
+    document.getElementById('bzOutCaption').textContent = cap ? `“${cap}”` : '';
+
+    const tagsEl = document.getElementById('bzOutTags');
+    tagsEl.innerHTML = '';
+    const tagList = [];
+    if (d.theme) tagList.push(d.theme);
+    (d.tags || []).forEach(t => tagList.push(t));
+    tagList.forEach(t => {
+      const span = document.createElement('span');
+      span.className = 'bz-tag';
+      span.textContent = t;
+      tagsEl.appendChild(span);
+    });
+
+    const out = document.getElementById('bz-output-area');
+    out.classList.remove('visible');
+    void out.offsetWidth;
+    out.classList.add('visible');
+    setTimeout(() => out.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  function bzCopyScript() {
+    if (!bzLastData) return;
+    const d = bzLastData;
+    const cap = (d.caption || '').replace(/^["“]|["”]$/g, '');
+    const lines = [
+      `BIZARRE -- "${d.title}"`,
+      `-- Single-panel non-sequitur --`,
+      '',
+      `PANEL: ${d.panel_description}`,
+      '',
+      `CAPTION: "${cap}"`,
+      '',
+      `TAGS: ${[d.theme, ...(d.tags || [])].filter(Boolean).join(', ')}`
+    ];
+    const text = lines.join('\n');
+    navigator.clipboard.writeText(text).then(bzShowCopied).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      bzShowCopied();
+    });
+  }
+
+  function bzShowCopied() {
+    const el = document.getElementById('bzCopyConfirm');
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2000);
   }
