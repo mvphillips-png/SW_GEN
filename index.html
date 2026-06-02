@@ -1588,6 +1588,33 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     "Isaac Newton, but the apples have organized"
   ];
 
+  // Shuffle-bag: deal each seed once before any repeats.
+  let bzSeedBag = [];
+  let bzLastSeed = null;
+
+  function bzShuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function bzNextSeed() {
+    if (bzSeedBag.length === 0) {
+      bzSeedBag = bzShuffle(BZ_SEEDS);
+      // Don't let a fresh bag open with the seed we just showed.
+      if (bzSeedBag[bzSeedBag.length - 1] === bzLastSeed && bzSeedBag.length > 1) {
+        [bzSeedBag[bzSeedBag.length - 1], bzSeedBag[bzSeedBag.length - 2]] =
+          [bzSeedBag[bzSeedBag.length - 2], bzSeedBag[bzSeedBag.length - 1]];
+      }
+    }
+    const seed = bzSeedBag.pop();
+    bzLastSeed = seed;
+    return seed;
+  }
+
   function bzBuildPrompt(idea) {
     const seed = idea
       ? `Build the panel from this seed: ${idea}`
@@ -1633,7 +1660,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
 
     let idea = (inputEl.value || '').trim();
     if (random) {
-      idea = BZ_SEEDS[Math.floor(Math.random() * BZ_SEEDS.length)];
+      idea = bzNextSeed();
       inputEl.value = idea;
     }
 
