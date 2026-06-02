@@ -1565,32 +1565,112 @@ Respond ONLY with valid JSON. No markdown, no preamble:
 
   let bzLastData = null;
 
-  const BZ_SEEDS = [
-    "earthworms holding a corporate retreat",
-    "an owl that has been on hold with a bank since 1981",
-    "a marine biologist who hasn't noticed the squid is taking notes on him",
-    "two aliens arguing over assembling flat-pack furniture in deep space",
-    "Cleopatra defeated by a self-checkout machine",
-    "a colony of ants running a lost-and-found",
-    "a physicist whose chalkboard proof is being corrected by a pigeon",
-    "an alien tourist who only wants to find a working restroom",
-    "Beethoven, but the only instrument available is a leaf blower",
-    "a snail that has filed for early retirement",
-    "moths attending a fire-safety seminar",
-    "a mission control room realizing the rover has unionized",
-    "Genghis Khan stuck behind a velvet rope at a museum about himself",
-    "a beetle giving a keynote to extremely uninterested beetles",
-    "deep-sea anglerfish enforcing assigned parking",
-    "a duck incorrectly cc'd on every office email since spring",
-    "a tortoise who has been mid-escape for eleven years",
-    "pigeons running an unlicensed weather service",
-    "a dung beetle reviewing its life choices at a roundabout",
-    "Isaac Newton, but the apples have organized"
+  // Combinatorial seed pools: any subject pairs with any situation.
+  // 49 x 49 = 2,401 possible seeds. Every phrasing below is written so
+  // that `${subject} ${situation}` always reads as a grammatical sentence.
+  const BZ_SUBJECTS = [
+    "An owl",
+    "A dung beetle",
+    "A colony of ants",
+    "A single earthworm",
+    "A praying mantis",
+    "A flock of pigeons",
+    "A deep-sea anglerfish",
+    "A tortoise",
+    "A snail",
+    "A moth",
+    "A migrating salmon",
+    "A herd of cattle",
+    "A lone penguin",
+    "A spider",
+    "A crow",
+    "A marine biologist",
+    "An oblivious physicist",
+    "A lab full of scientists",
+    "A field geologist",
+    "A NASA flight controller",
+    "An entomologist",
+    "A team of archaeologists",
+    "A weather forecaster",
+    "An alien tourist",
+    "Two aliens",
+    "An alien diplomat",
+    "A stranded extraterrestrial",
+    "A UFO crew",
+    "A small green alien",
+    "Cleopatra",
+    "Napoleon",
+    "Genghis Khan",
+    "Isaac Newton",
+    "Beethoven",
+    "Julius Caesar",
+    "A medieval knight",
+    "A confused Viking",
+    "An Egyptian pharaoh",
+    "A Roman senator",
+    "Leonardo da Vinci",
+    "A caveman",
+    "A duck",
+    "A goldfish",
+    "A committee of raccoons",
+    "A bored vulture",
+    "A hamster",
+    "A jellyfish",
+    "A migrating goose",
+    "A beaver"
   ];
 
-  // Shuffle-bag: deal each seed once before any repeats.
-  let bzSeedBag = [];
-  let bzLastSeed = null;
+  const BZ_SITUATIONS = [
+    "stuck on hold with the bank since 1981",
+    "defeated by a self-checkout machine",
+    "filing a noise complaint",
+    "running an unlicensed lost-and-found",
+    "enforcing assigned parking",
+    "attending a mandatory fire-safety seminar",
+    "filling out an expense report",
+    "waiting at the DMV",
+    "reading the terms and conditions in full",
+    "assembling flat-pack furniture",
+    "arguing about the thermostat",
+    "stuck in a revolving door",
+    "trying to cancel a gym membership",
+    "presenting quarterly results to no one",
+    "left on hold with tech support",
+    "organizing a surprise party badly",
+    "lost in a parking garage",
+    "waiting for a delayed bus",
+    "holding a board meeting underground",
+    "unionizing",
+    "demanding a refund",
+    "filling potholes with great seriousness",
+    "running a timeshare seminar",
+    "renewing a passport",
+    "testifying before a committee",
+    "stuck behind a velvet rope",
+    "trying to return a defective umbrella",
+    "moderating an online forum",
+    "complaining about the Wi-Fi",
+    "taking detailed meeting minutes",
+    "applying for a small business loan",
+    "reviewing life choices at a roundabout",
+    "installing a printer driver",
+    "waiting for the cable guy",
+    "negotiating a parking ticket",
+    "running for local office",
+    "filing taxes at the last minute",
+    "stuck in a customer-service phone tree",
+    "leading a corporate retreat",
+    "assembling a bookshelf incorrectly",
+    "waiting behind someone with too many items",
+    "trying to merge onto the highway",
+    "forming a neighborhood watch",
+    "holding a yard sale",
+    "disputing a late fee",
+    "setting up a conference call",
+    "reading a very long privacy policy aloud",
+    "stuck in an elevator with a rival",
+    "attending jury duty"
+  ];
 
   function bzShuffle(arr) {
     const a = arr.slice();
@@ -1601,16 +1681,35 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     return a;
   }
 
-  function bzNextSeed() {
-    if (bzSeedBag.length === 0) {
-      bzSeedBag = bzShuffle(BZ_SEEDS);
-      // Don't let a fresh bag open with the seed we just showed.
-      if (bzSeedBag[bzSeedBag.length - 1] === bzLastSeed && bzSeedBag.length > 1) {
-        [bzSeedBag[bzSeedBag.length - 1], bzSeedBag[bzSeedBag.length - 2]] =
-          [bzSeedBag[bzSeedBag.length - 2], bzSeedBag[bzSeedBag.length - 1]];
+  // Each pool gets its own shuffle-bag, so a subject won't repeat until
+  // all 49 subjects have been used, and likewise for situations. With the
+  // two cycling independently, an identical PAIR is astronomically rare.
+  let bzSubjectBag = [], bzSituationBag = [];
+  let bzLastSubject = null, bzLastSituation = null;
+  let bzLastSeed = null;
+
+  function bzDraw(bag, refill, lastVal) {
+    if (bag.length === 0) {
+      const fresh = bzShuffle(refill);
+      // Don't let a fresh bag open with the value we just showed.
+      if (fresh[fresh.length - 1] === lastVal && fresh.length > 1) {
+        [fresh[fresh.length - 1], fresh[fresh.length - 2]] =
+          [fresh[fresh.length - 2], fresh[fresh.length - 1]];
       }
+      bag.push.apply(bag, fresh);
     }
-    const seed = bzSeedBag.pop();
+    return bag.pop();
+  }
+
+  function bzNextSeed() {
+    let seed, tries = 0;
+    do {
+      const subject = bzDraw(bzSubjectBag, BZ_SUBJECTS, bzLastSubject);
+      const situation = bzDraw(bzSituationBag, BZ_SITUATIONS, bzLastSituation);
+      bzLastSubject = subject;
+      bzLastSituation = situation;
+      seed = `${subject} ${situation}`;
+    } while (seed === bzLastSeed && ++tries < 4);
     bzLastSeed = seed;
     return seed;
   }
