@@ -603,6 +603,24 @@
   }
 
   /* ── ROUTINE OF THE DAY (Early Bird) ── */
+  .bb-chip-label {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(255,251,232,0.55); margin-bottom: 8px;
+  }
+  .bb-chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+  .bb-chip {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12.5px;
+    padding: 7px 13px; border-radius: 100px; cursor: pointer;
+    border: 2px solid rgba(255,251,232,0.22);
+    background: rgba(255,255,255,0.05); color: rgba(255,251,232,0.7);
+    transition: all 0.12s ease;
+  }
+  .bb-chip:hover { border-color: #ffce5a; color: var(--cream); }
+  .bb-chip.active {
+    background: linear-gradient(180deg, #ffd76b, #ffb347);
+    border-color: #ffb347; color: #4a3500;
+  }
   .bb-routine-btn {
     font-family: 'Fredoka One', cursive;
     font-size: 16px; letter-spacing: 0.03em;
@@ -634,6 +652,12 @@
   }
   .try-this-text {
     font-family: 'Boogaloo', cursive; font-size: 22px; line-height: 1.35; color: var(--cream);
+  }
+  .try-this-well {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #4a3500;
+    background: linear-gradient(180deg, #ffd76b, #ffb347);
+    padding: 2px 9px; border-radius: 100px; margin-left: 4px;
   }
 
   /* ════════════════════════════════════════════════════
@@ -833,6 +857,8 @@
     </div>
 
     <div id="bbRoutineWrap" style="display:none; margin-top:14px;">
+      <div class="bb-chip-label">Pick a well (or leave on Any):</div>
+      <div class="bb-chip-row" id="bbChipRow"></div>
       <button class="bb-routine-btn" onclick="bbRoutineOfTheDay()">🎲 Routine of the Day</button>
       <div class="bb-routine-hint">A fresh, do-it-tomorrow morning routine every time — never the same one twice in a cycle.</div>
     </div>
@@ -877,7 +903,7 @@
 
     <!-- Try This (Early Bird only) -->
     <div class="try-this-card" id="tryThisCard">
-      <div class="try-this-label">🌅 Try This Tomorrow</div>
+      <div class="try-this-label">🌅 Try This Tomorrow <span class="try-this-well" id="outTryWell"></span></div>
       <div class="try-this-text" id="outTryThis">–</div>
     </div>
 
@@ -983,77 +1009,95 @@
   let selectedHumor = [];
   let lastData = null;
 
-  /* ── EARLY BIRD ROUTINE LIBRARY ──────────────────────────────
-     Curated, genuinely-doable morning routines. A shuffle-bag deals
-     a fresh one each generate, so a routine won't repeat until the
-     whole library has been used. Grow this list anytime. */
-  const BB_ROUTINES = [
-    "Step outside for sixty seconds of real daylight before anything else.",
-    "Open one window and take five slow breaths of cool morning air.",
-    "Drink a full glass of water before you touch the coffee.",
-    "Make the bed -- the first tiny win of the day.",
-    "Keep the first ten minutes phone-free; check the sky before the screen.",
-    "Reach for the ceiling and stretch tall before reaching for your phone.",
-    "Take five slow breaths before your feet ever hit the floor.",
-    "Walk to the end of the block and back, no agenda.",
-    "Name one thing -- just one -- you actually want to do today.",
-    "Write a single line in a notebook. Not pages. One line.",
-    "Face the brightest window while the coffee brews.",
-    "Hold your warm drink in both hands and do nothing for one minute.",
-    "Put on one song and shake out for the length of it.",
-    "Set out tomorrow's start tonight so morning-you has less to decide.",
-    "Move the alarm across the room so getting up is the first small choice.",
-    "Clear one surface -- just one -- before the day fills it again.",
-    "Say one genuinely kind sentence to yourself, out loud if you can.",
-    "Send one warm good-morning message to someone before 9.",
-    "Stand barefoot on the floor for a moment and notice you are here.",
-    "Decide the day's 'one good thing' before the world has opinions.",
-    "Do one gentle stretch you actually like -- the one that feels good.",
-    "Sit with both feet flat on the floor for one quiet minute.",
-    "Make the coffee a small ritual instead of a refuel.",
-    "Write three sentences, badly, on purpose, before the day asks anything.",
-    "Step outside and find one thing that is green.",
-    "Splash cool water on your face and call it a reset.",
-    "Pick one task for today and let the rest wait their turn.",
-    "Put your feet up the wall for two minutes and just breathe.",
-    "Eat breakfast sitting down, away from a screen.",
-    "Roll your shoulders back ten times and unclench your jaw.",
-    "Read one page of something you actually like before the news.",
-    "Tidy the spot you will see first when you come home tonight.",
-    "Let the sun hit your face for thirty seconds, eyes closed.",
-    "Make a short list of what you are NOT doing today.",
-    "Hum or sing for the length of brushing your teeth.",
-    "Take the long way to the kitchen and notice three things.",
-    "Stretch both arms overhead and take one enormous yawn on purpose.",
-    "Write down the first kind thought you have, before the critical ones arrive.",
-    "Stand at the window and watch the weather for one full minute.",
-    "Drink your water outside if you can, even just on the step.",
-    "Do five slow neck rolls before checking a single notification.",
-    "Pick tomorrow's one priority before you close your eyes tonight.",
-    "Put on real shoes -- it tells your brain the day has started.",
-    "Take three breaths so slow they feel almost too slow.",
-    "Wipe down one counter and call the kitchen handled.",
-    "Look at something far away for a minute before looking at anything close.",
-    "Set a two-minute timer and stretch until it rings.",
-    "Greet the day out loud, even if it feels silly. Especially then.",
-    "Lay out your water glass and vitamins the night before.",
-    "Take the first ten breaths of the day standing in a doorway, tall.",
-    "Make one small thing -- a sketch, a sentence, a chord -- before email.",
-    "Put the phone face-down in another room while you have breakfast.",
-    "Notice one good smell -- coffee, toast, rain -- and stay with it.",
-    "Do a slow forward fold and let your head hang for thirty seconds.",
-    "Pick a single word for the day and keep it in your pocket.",
-    "Step on the scale of nothing -- skip the metrics, just stand in the light.",
-    "Open the curtains all the way before you do anything else.",
-    "Take a two-minute walk in whatever direction looks brightest.",
-    "Write tomorrow-you a one-line note tonight: 'Start with ___.'",
-    "Hold a stretch in the shower while the water warms up."
+  /* ── EARLY BIRD ROUTINE LIBRARY (categorized by routine well) ──
+     Each routine is tagged with a well. A per-filter shuffle-bag deals a
+     fresh one each generate, so nothing repeats until that pool is used.
+     Grow any category anytime -- the bags adapt to whatever length. */
+  const BB_CATEGORIES = [
+    { key: 'Any',                       icon: '\u{1F3B2}' },
+    { key: 'Light & Air',               icon: '\u2600\uFE0F' },
+    { key: 'Body & Movement',           icon: '\u{1F938}' },
+    { key: 'Breath & Calm',             icon: '\u{1F32C}\uFE0F' },
+    { key: 'Water & Fuel',              icon: '\u{1F4A7}' },
+    { key: 'Mind & Intention',          icon: '\u{1F3AF}' },
+    { key: 'Phone Boundaries',          icon: '\u{1F4F5}' },
+    { key: 'Environment',               icon: '\u{1F9F9}' },
+    { key: 'Creative Warmup',           icon: '\u270F\uFE0F' },
+    { key: 'Connection & Self-Kindness', icon: '\u{1F49B}' },
+    { key: 'Grounding & Senses',        icon: '\u{1F33F}' }
   ];
 
-  let bbRoutineBag = [];
-  let bbLastRoutine = null;   // last routine dealt (no immediate repeats)
-  let bbPendingRoutine = '';  // set by Routine of the Day, consumed by buildPrompt
-  let bbActiveRoutine = '';   // routine used in the most recent generation
+  const BB_ROUTINES = [
+    { cat: 'Light & Air',  text: "Step outside for sixty seconds of real daylight before anything else." },
+    { cat: 'Light & Air',  text: "Open one window and take five slow breaths of cool morning air." },
+    { cat: 'Water & Fuel', text: "Drink a full glass of water before you touch the coffee." },
+    { cat: 'Environment',  text: "Make the bed -- the first tiny win of the day." },
+    { cat: 'Phone Boundaries', text: "Keep the first ten minutes phone-free; check the sky before the screen." },
+    { cat: 'Body & Movement',  text: "Reach for the ceiling and stretch tall before reaching for your phone." },
+    { cat: 'Breath & Calm',    text: "Take five slow breaths before your feet ever hit the floor." },
+    { cat: 'Body & Movement',  text: "Walk to the end of the block and back, no agenda." },
+    { cat: 'Mind & Intention', text: "Name one thing -- just one -- you actually want to do today." },
+    { cat: 'Mind & Intention', text: "Write a single line in a notebook. Not pages. One line." },
+    { cat: 'Light & Air',  text: "Face the brightest window while the coffee brews." },
+    { cat: 'Grounding & Senses', text: "Hold your warm drink in both hands and do nothing for one minute." },
+    { cat: 'Body & Movement',  text: "Put on one song and shake out for the length of it." },
+    { cat: 'Environment',  text: "Set out tomorrow's start tonight so morning-you has less to decide." },
+    { cat: 'Phone Boundaries', text: "Move the alarm across the room so getting up is the first small choice." },
+    { cat: 'Environment',  text: "Clear one surface -- just one -- before the day fills it again." },
+    { cat: 'Connection & Self-Kindness', text: "Say one genuinely kind sentence to yourself, out loud if you can." },
+    { cat: 'Connection & Self-Kindness', text: "Send one warm good-morning message to someone before 9." },
+    { cat: 'Grounding & Senses', text: "Stand barefoot on the floor for a moment and notice you are here." },
+    { cat: 'Mind & Intention', text: "Decide the day's 'one good thing' before the world has opinions." },
+    { cat: 'Body & Movement',  text: "Do one gentle stretch you actually like -- the one that feels good." },
+    { cat: 'Breath & Calm',    text: "Sit with both feet flat on the floor for one quiet minute." },
+    { cat: 'Water & Fuel', text: "Make the coffee a small ritual instead of a refuel." },
+    { cat: 'Creative Warmup',  text: "Write three sentences, badly, on purpose, before the day asks anything." },
+    { cat: 'Light & Air',  text: "Step outside and find one thing that is green." },
+    { cat: 'Grounding & Senses', text: "Splash cool water on your face and call it a reset." },
+    { cat: 'Mind & Intention', text: "Pick one task for today and let the rest wait their turn." },
+    { cat: 'Breath & Calm',    text: "Put your feet up the wall for two minutes and just breathe." },
+    { cat: 'Water & Fuel', text: "Eat breakfast sitting down, away from a screen." },
+    { cat: 'Body & Movement',  text: "Roll your shoulders back ten times and unclench your jaw." },
+    { cat: 'Phone Boundaries', text: "Read one page of something you actually like before the news." },
+    { cat: 'Environment',  text: "Tidy the spot you will see first when you come home tonight." },
+    { cat: 'Light & Air',  text: "Let the sun hit your face for thirty seconds, eyes closed." },
+    { cat: 'Mind & Intention', text: "Make a short list of what you are NOT doing today." },
+    { cat: 'Grounding & Senses', text: "Hum or sing for the length of brushing your teeth." },
+    { cat: 'Grounding & Senses', text: "Take the long way to the kitchen and notice three things." },
+    { cat: 'Body & Movement',  text: "Stretch both arms overhead and take one enormous yawn on purpose." },
+    { cat: 'Connection & Self-Kindness', text: "Write down the first kind thought you have, before the critical ones arrive." },
+    { cat: 'Light & Air',  text: "Stand at the window and watch the weather for one full minute." },
+    { cat: 'Water & Fuel', text: "Drink your water outside if you can, even just on the step." },
+    { cat: 'Body & Movement',  text: "Do five slow neck rolls before checking a single notification." },
+    { cat: 'Mind & Intention', text: "Pick tomorrow's one priority before you close your eyes tonight." },
+    { cat: 'Environment',  text: "Put on real shoes -- it tells your brain the day has started." },
+    { cat: 'Breath & Calm',    text: "Take three breaths so slow they feel almost too slow." },
+    { cat: 'Environment',  text: "Wipe down one counter and call the kitchen handled." },
+    { cat: 'Grounding & Senses', text: "Look at something far away for a minute before looking at anything close." },
+    { cat: 'Body & Movement',  text: "Set a two-minute timer and stretch until it rings." },
+    { cat: 'Connection & Self-Kindness', text: "Greet the day out loud, even if it feels silly. Especially then." },
+    { cat: 'Environment',  text: "Lay out your water glass and vitamins the night before." },
+    { cat: 'Breath & Calm',    text: "Take the first ten breaths of the day standing in a doorway, tall." },
+    { cat: 'Creative Warmup',  text: "Make one small thing -- a sketch, a sentence, a chord -- before email." },
+    { cat: 'Phone Boundaries', text: "Put the phone face-down in another room while you have breakfast." },
+    { cat: 'Grounding & Senses', text: "Notice one good smell -- coffee, toast, rain -- and stay with it." },
+    { cat: 'Body & Movement',  text: "Do a slow forward fold and let your head hang for thirty seconds." },
+    { cat: 'Mind & Intention', text: "Pick a single word for the day and keep it in your pocket." },
+    { cat: 'Light & Air',  text: "Step on the scale of nothing -- skip the metrics, just stand in the light." },
+    { cat: 'Light & Air',  text: "Open the curtains all the way before you do anything else." },
+    { cat: 'Body & Movement',  text: "Take a two-minute walk in whatever direction looks brightest." },
+    { cat: 'Mind & Intention', text: "Write tomorrow-you a one-line note tonight: 'Start with ___.'" },
+    { cat: 'Body & Movement',  text: "Hold a stretch in the shower while the water warms up." },
+    { cat: 'Creative Warmup',  text: "Doodle for one minute with no goal and nobody watching." },
+    { cat: 'Creative Warmup',  text: "Free-write whatever is in your head for ninety seconds, then stop." }
+  ];
+
+  let bbFilter = 'Any';        // active routine well
+  let bbBags = {};             // one shuffle-bag per filter key
+  let bbLastByFilter = {};     // last routine text dealt, per filter (no repeats)
+  let bbPendingRoutine = '';   // {text,cat} set by Routine of the Day
+  let bbActiveRoutine = '';    // routine text used in the most recent generation
+  let bbActiveCategory = '';   // its well, for the Try This label
 
   function bbShuffle(arr) {
     const a = arr.slice();
@@ -1064,35 +1108,69 @@
     return a;
   }
 
-  function bbNextRoutine() {
-    if (bbRoutineBag.length === 0) {
-      bbRoutineBag = bbShuffle(BB_ROUTINES);
-      if (bbRoutineBag[bbRoutineBag.length - 1] === bbLastRoutine && bbRoutineBag.length > 1) {
-        [bbRoutineBag[bbRoutineBag.length - 1], bbRoutineBag[bbRoutineBag.length - 2]] =
-          [bbRoutineBag[bbRoutineBag.length - 2], bbRoutineBag[bbRoutineBag.length - 1]];
+  function bbPoolFor(filter) {
+    return filter === 'Any' ? BB_ROUTINES : BB_ROUTINES.filter(r => r.cat === filter);
+  }
+
+  // Returns {text, cat}. Draws from the bag for the given filter (defaults to
+  // the active well), refilling + reshuffling that bag when it runs dry.
+  function bbNextRoutine(filter) {
+    filter = filter || bbFilter;
+    const pool = bbPoolFor(filter);
+    if (!bbBags[filter] || bbBags[filter].length === 0) {
+      const fresh = bbShuffle(pool);
+      const last = bbLastByFilter[filter];
+      if (fresh.length > 1 && fresh[fresh.length - 1].text === last) {
+        [fresh[fresh.length - 1], fresh[fresh.length - 2]] =
+          [fresh[fresh.length - 2], fresh[fresh.length - 1]];
       }
+      bbBags[filter] = fresh;
     }
-    const r = bbRoutineBag.pop();
-    bbLastRoutine = r;
+    const r = bbBags[filter].pop();
+    bbLastByFilter[filter] = r.text;
     return r;
   }
 
-  // 🎲 Routine of the Day: force-select Early Bird, deal a fresh routine, generate.
+  function bbSetFilter(key) {
+    bbFilter = key;
+    document.querySelectorAll('.bb-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.cat === key);
+    });
+  }
+
   function bbRoutineOfTheDay() {
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
     const ebBtn = document.querySelector('[data-cat="Early Bird Routines"]');
     if (ebBtn) ebBtn.classList.add('active');
     selectedSeries = 'Early Bird Routines';
     document.getElementById('freeformInput').value = '';  // let the routine drive
-    bbPendingRoutine = bbNextRoutine();
+    bbPendingRoutine = bbNextRoutine();   // {text, cat}
     bbUpdateRoutineButton();
     generateStrip();
   }
 
-  // Show the Routine of the Day button only when Early Bird is the active series.
+  // Build the well-filter chips once.
+  function bbBuildChips() {
+    const row = document.getElementById('bbChipRow');
+    if (!row || row.dataset.built) return;
+    BB_CATEGORIES.forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'bb-chip' + (c.key === bbFilter ? ' active' : '');
+      b.dataset.cat = c.key;
+      b.type = 'button';
+      b.textContent = `${c.icon} ${c.key}`;
+      b.addEventListener('click', () => bbSetFilter(c.key));
+      row.appendChild(b);
+    });
+    row.dataset.built = '1';
+  }
+
+  // Show the Routine of the Day controls only when Early Bird is the active series.
   function bbUpdateRoutineButton() {
     const wrap = document.getElementById('bbRoutineWrap');
-    if (wrap) wrap.style.display = (selectedSeries === 'Early Bird Routines') ? 'block' : 'none';
+    if (!wrap) return;
+    bbBuildChips();
+    wrap.style.display = (selectedSeries === 'Early Bird Routines') ? 'block' : 'none';
   }
 
   document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -1455,18 +1533,21 @@ The setting should reflect the emotional temperature of the panel. If the wound 
     // own topic, that drives instead and we let the model surface a fitting one.
     let routineDirective = '';
     if (series === 'Early Bird Routines' && !freeform) {
-      const routine = (typeof bbPendingRoutine === 'string' && bbPendingRoutine)
+      const routine = (bbPendingRoutine && bbPendingRoutine.text)
         ? bbPendingRoutine
         : bbNextRoutine();
-      bbPendingRoutine = '';           // consume it
-      bbActiveRoutine = routine;       // remember for the Try This chip / copy
+      bbPendingRoutine = '';                 // consume it
+      bbActiveRoutine = routine.text;        // remember for the Try This card / copy
+      bbActiveCategory = routine.cat || '';
       routineDirective = `
 
 == TODAY'S ROUTINE (build the ENTIRE panel around THIS specific routine) ==
-${routine}
+WELL: ${routine.cat}
+ROUTINE: ${routine.text}
 The panel must clearly show or state this routine so a reader knows exactly what to try tomorrow. Populate the "try_this" field with this routine, phrased as a short, plain, do-it-tomorrow instruction.`;
     } else if (series === 'Early Bird Routines') {
       bbActiveRoutine = '';
+      bbActiveCategory = '';
       routineDirective = `
 
 == ROUTINE REQUIREMENT ==
@@ -1608,6 +1689,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     const tryText = (d.try_this || '').trim() || bbActiveRoutine || '';
     if (tryText && (d.series === 'Early Bird Routines' || selectedSeries === 'Early Bird Routines')) {
       document.getElementById('outTryThis').textContent = tryText;
+      document.getElementById('outTryWell').textContent = bbActiveCategory || '';
       tryCard.classList.add('visible');
     } else {
       tryCard.classList.remove('visible');
