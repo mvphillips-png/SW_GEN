@@ -1730,6 +1730,50 @@ Respond ONLY with valid JSON. No markdown, no preamble:
 }`
   }
 
+  // Pull the model's text out of a Worker/Anthropic response of any shape.
+  function extractRawText(data) {
+    if (!data) return '';
+    if (Array.isArray(data.content)) return data.content.map(b => (b && b.text) || '').join('');
+    if (typeof data.content === 'string') return data.content;
+    if (data.completion) return data.completion;
+    return '';
+  }
+
+  // Find and parse the JSON object even if wrapped in code fences or stray text.
+  function parsePanelJSON(raw) {
+    let s = raw.replace(/```json|```/g, '').trim();
+    try { return JSON.parse(s); } catch (e) {}
+    const first = s.indexOf('{');
+    const last = s.lastIndexOf('}');
+    if (first !== -1 && last > first) {
+      return JSON.parse(s.slice(first, last + 1)); // throws if still incomplete
+    }
+    throw new Error('No complete JSON object in response');
+  }
+
+  async function callWorker() {
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: buildPrompt() }]
+      })
+    });
+    if (!response.ok) throw new Error(`Worker error ${response.status}`);
+    const data = await response.json();
+    const raw = extractRawText(data);
+    if (!raw) throw new Error('Empty response from Worker');
+    if (data.stop_reason === 'max_tokens') {
+      // output was cut off mid-JSON; signal a retry rather than a hard fail
+      const err = new Error('Response truncated (max_tokens)');
+      err.truncated = true;
+      throw err;
+    }
+    return parsePanelJSON(raw);
+  }
+
   async function generateStrip() {
     const btn = document.getElementById('generateBtn');
     const loadingBar = document.getElementById('loadingBar');
@@ -1741,33 +1785,17 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     errorBox.style.display = 'none';
 
     try {
-      const response = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: buildPrompt() }]
-        })
-      });
-
-      if (!response.ok) throw new Error(`Worker error ${response.status}`);
-
-      const data = await response.json();
-      let raw = '';
-      if (data.content && Array.isArray(data.content)) {
-        raw = data.content.map(b => b.text || '').join('');
-      } else if (typeof data.content === 'string') {
-        raw = data.content;
+      let parsed;
+      try {
+        parsed = await callWorker();
+      } catch (firstErr) {
+        // One automatic retry -- covers transient Worker hiccups and truncated/garbled JSON.
+        parsed = await callWorker();
       }
-
-      const cleaned = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
       lastData = parsed;
       renderOutput(parsed);
-
     } catch (err) {
-      errorBox.textContent = `Couldn't generate the gag -- check the Worker connection and try again. (${err.message})`;
+      errorBox.textContent = `Couldn't generate the gag -- please tap Generate again. (${err.message})`;
       errorBox.style.display = 'block';
       errorBox.classList.add('visible');
     } finally {
@@ -2124,8 +2152,8 @@ Respond ONLY with valid JSON. No markdown, no preamble:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1200,
           messages: [{ role: 'user', content: bzBuildPrompt(idea) }]
         })
       });
@@ -2139,9 +2167,17 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       } else if (typeof data.content === 'string') {
         raw = data.content;
       }
+      if (!raw) throw new Error('Empty response from Worker');
 
-      const cleaned = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
+      let s = raw.replace(/```json|```/g, '').trim();
+      let parsed;
+      try {
+        parsed = JSON.parse(s);
+      } catch (e) {
+        const a = s.indexOf('{'), b = s.lastIndexOf('}');
+        if (a === -1 || b <= a) throw e;
+        parsed = JSON.parse(s.slice(a, b + 1));
+      }
       bzLastData = parsed;
       bzRenderOutput(parsed);
 
