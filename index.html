@@ -882,6 +882,7 @@
       <button class="mood-btn" data-cat="Make Them Feel Important">🫵 Make Them Feel Important</button>
       <button class="mood-btn" data-cat="Not Giving a Cl*ck">🪶 Not Giving a Cl*ck</button>
       <button class="mood-btn" data-cat="The Composter">🪱 The Composter</button>
+      <button class="mood-btn" data-cat="Cheep Laughs">😂 Cheep Laughs</button>
     </div>
 
     <div id="bbRoutineWrap" style="display:none; margin-top:14px;">
@@ -1281,6 +1282,9 @@
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
     const series = selectedSeries || 'Honestly Though';
+    // Some series use an analogy as their private engine; the analogy's name must
+    // never reach the model or it bleeds into the output. Send a neutral label instead.
+    const promptSeries = (series === 'The Composter') ? 'The Turnaround' : series;
 
     // Build humor instruction block with full definitions
     let humorBlock;
@@ -1662,64 +1666,106 @@ Fault vs responsibility:
   Chirp: "Not your fault. Still your nest."`,
 
       'The Composter': `
-SERIES: THE COMPOSTER
+SERIES: THE TURNAROUND
 
-== THE HIDDEN ENGINE (never shown on the page) ==
-This series runs on a private analogy: take whatever garbage goes in (a bad day, a failure, an embarrassment, a complaint, a mess) and quietly transform it so it comes out chirpy, clean, and genuinely useful. Garbage in, growth out. This is "Start Messy, Grow Smart" in action. The analogy is INVISIBLE -- the reader only ever sees the result, never the machinery behind it.
+== WHAT THIS SERIES DOES ==
+The reader shows up with something that went wrong -- a setback, a failure, an embarrassment, a bad day, a frustration (whatever the writer typed above). This series takes that bad thing and flips it into something genuinely useful and chirpy: a reframe, a small true insight, a usable bit of perspective they can walk away with. The bad thing goes in; something clean and helpful comes out.
 
-== HARD RULE: BANNED WORDS ==
-NEVER use the words composter, compost, composting, humus, soil, worm-bin, decompose, fertilizer, manure, or "rot into" anywhere in the title, panel description, dialogue, or chirp. The transformation must read as completely natural, in plain everyday language. Any compost or garden imagery in the output = failure.
-
-== HOW EVERY PANEL WORKS ==
-1. SOMETHING BAD GOES IN. Take the writer's topic above (or a common frustration) as the raw material -- the setback, the screwup, the annoyance, the rotten day.
-2. IT GETS TRANSFORMED. The panel breaks it down and turns it into something genuinely useful -- a reframe, a small truth, a usable bit of perspective.
-3. SOMETHING CLEAN AND CHIRPY COMES OUT. The takeaway is light, funny, and actually helpful -- not a lecture, and not fake cheer.
-
-== HEALTHY TRANSFORMATION (important) ==
-Do NOT pretend the bad thing was secretly fine. Name it honestly as a bad thing first. The point is that bad things, given a little time, can become useful -- a lesson, a story, a stronger position. Acknowledge the bad thing, THEN turn it into something that helps. Never toxic positivity, never "just smile."
+== KEEP IT HONEST (not fake cheer) ==
+Do NOT pretend the bad thing was secretly fine. Name it honestly as a bad thing first. Then find the genuinely useful angle -- the lesson in it, the funny story it will become, the stronger position it leaves you in. Real problem, real reframe, real use. Never toxic positivity, never "just smile."
 
 == WHO SPEAKS ==
-- Bug is the transformer -- grounded, deadpan, unbothered. He takes the bad thing and hands back the useful version.
-- Baker Bird brings the bad thing -- the fresh complaint, the hot mess, the failure.
-- Both present: Baker Bird presents the mess; Bug reframes it into the chirpy, useful line. Bug lands it.
+- Bug does the turning-around: grounded, deadpan, unbothered. He takes the bad thing and hands back the useful version.
+- Baker Bird brings the bad thing: the fresh complaint, the hot mess, the failure.
+- Both present: Baker Bird presents the mess; Bug flips it into the chirpy, useful line and lands it.
 
 == TONE ==
-Funny first, warm, genuinely useful. The comedy is in the contrast -- a ridiculous mess in, a clean little gem out -- and in Bug's matter-of-fact delivery. Useful without preaching.
+Funny first, warm, genuinely useful. The comedy is in the contrast -- a ridiculous problem in, a clean little gem out -- and in Bug's matter-of-fact delivery. Useful without preaching.
+
+== PLAIN LANGUAGE ONLY (hard rule) ==
+Say it straight. NO metaphors about dirt, gardens, plants, seeds, growing things, bins, trash, waste, recycling, or anything being physically broken down or turned into something else. The reframe is SPOKEN, not staged as a process or shown as objects. Keep the panel ordinary Seeds & Worms life.
 
 == DIALOGUE RULES ==
 - Tight, two lines ideal.
-- Baker Bird presents the bad thing; Bug transforms it.
-- Plain language only -- no garden, dirt, or compost metaphors.
+- Baker Bird presents the bad thing; Bug flips it into the useful version.
 - End on something usable, not a sermon.
 
 == THE CHIRP (the useful takeaway) ==
-The clean, chirpy, useful line -- the transformed result. Under 15 words. Light, a little funny, actually helpful. Something you could USE tomorrow. No compost or soil wording.
+The clean, chirpy, useful line -- the flipped result. Under 15 words. Light, a little funny, actually helpful. Something you could USE tomorrow.
 Shape: "Rejection is just data with a bad attitude." / "Today's disaster is next month's punchline."
 
-== THE GAP FROM OTHER SERIES ==
-Early Bird Routines hands you a morning to-do. Honestly Though sits with the feeling. THIS series takes something bad and turns it into something useful you walk away with.
+== TAGS ==
+Tags describe the topic and the feeling only (e.g. rejection, burnout, perspective, first drafts). NEVER put the series name in the tags.
 
-== CAPTION LABEL ==
-The Composter -- MVANNP
+== THE GAP FROM OTHER SERIES ==
+Early Bird Routines hands you a morning to-do. Honestly Though sits with the feeling. THIS series takes something bad and flips it into something useful you walk away with.
 
 == SETTING ==
-Ordinary Seeds & Worms life -- the branch or the Nest. No compost bins, no dirt, no garden imagery. Baker Bird arriving frazzled with the bad thing; Bug calm, handing back the useful version.
+Ordinary Seeds & Worms life -- the branch or the Nest. Nothing in frame that turns the reframe into a physical process. Baker Bird arriving frazzled with the bad thing; Bug calm, handing back the useful version.
 
-== WORKED EXAMPLES (note: zero compost or soil wording) ==
+== WORKED EXAMPLES ==
 Bad thing: a pile of rejections.
   Baker Bird (waving a fistful of letters): "Forty rejections. FORTY."
   Bug: "Great. Forty things you now know don't work."
   Chirp: "Rejection is just data with a bad attitude."
 
 Bad thing: a wrecked day.
-  Baker Bird: "Dropped the worms, tripped, the nest fell. Total disaster."
+  Baker Bird: "Tripped, lost the worms, the nest tipped over. Total disaster."
   Bug: "Give it a week. Bad days age into good stories."
   Chirp: "Today's disaster is next month's punchline."
 
 Bad thing: an embarrassing moment.
   Baker Bird (mortified): "I called the hawk 'mom.' In front of EVERYONE."
-  Bug: "Give it till spring. Then it's just a story you tell."
-  Chirp: "Embarrassment now, anecdote later."`
+  Bug: "Give it a month. Then it's just a story you tell."
+  Chirp: "Embarrassment now, anecdote later."`,
+
+      'Cheep Laughs': `
+SERIES: CHEEP LAUGHS
+
+== WHAT THIS SERIES IS ==
+Pure, lighthearted joke panels. One character tells a short, classic-style pun or one-liner; the other lands a quick, funny reaction. That's the whole thing. No deeper meaning, no truth underneath, no life lesson -- just a groan-worthy joke and a good comeback. This is the silliest, breeziest corner of the strip. Ignore any instinct to make it meaningful; here, the laugh IS the point.
+
+== THE JOKE ==
+A short, clean, groaner-style pun or one-liner -- the kind you'd read off a popsicle stick. Setup plus punchline, tight enough to fit in a speech bubble. Wordplay, puns, and dumb-in-the-best-way logic are the entire goal. Write ORIGINAL jokes in the spirit of these:
+- "Why don't skeletons ever fight? They don't have the guts."
+- "I used to be addicted to the hokey pokey... but I turned myself around."
+- "Why don't scientists trust atoms? Because they make up everything."
+- "Why did the scarecrow win an award? He was outstanding in his field."
+- "I only know 25 letters of the alphabet. I don't know why."
+
+== THE REACTION ==
+Whoever did NOT tell the joke gives a short, timely, funny response -- a groan, a deadpan zinger, an eye-roll, a reluctant laugh, a "please stop," or a quick one-up. It should feel like a real friend reacting to a so-bad-it's-good joke.
+
+== WHO SPEAKS ==
+Either character can tell the joke; the other reacts. Mix up who leads.
+- Baker Bird telling: gleeful, way too proud of the pun. Bug reacts dry.
+- Bug telling: deadpan delivery, secretly pleased. Baker Bird reacts big.
+
+== TONE ==
+Lighthearted, silly, breezy -- lighter than every other series. No wound, no wisdom, no feelings to work through. Just a joke and a laugh. Clean and good-natured.
+
+== KEEP IT SHORT (hard rule) ==
+Speech-bubble short. The joke is one setup + punchline. The reaction is one quick line. If it wouldn't fit in a small caption bubble, trim it. Two lines ideal, three at the very most.
+
+== THE CHIRP (bottom-of-panel bonus) ==
+One extra short groaner or tag line for the bottom of the panel. Under 12 words. Pure silly, no meaning.
+Shape: "He has forty more of these." / "Somebody stop him."
+
+== SETTING ==
+The branch or the Nest, casual and relaxed. One character mid-joke, the other mid-reaction. Simple -- the joke is the star.
+
+== WORKED EXAMPLES ==
+  Baker Bird (grinning): "Why don't skeletons ever fight each other? They don't have the guts!"
+  Bug (flat): "I'm going to need a minute alone."
+  Chirp: "He has forty more of these."
+
+  Bug (deadpan): "I only know 25 letters of the alphabet. I don't know why."
+  Baker Bird (delighted): "It's Y! The letter Y!"
+  Chirp: "He's so proud. Look at him."
+
+  Baker Bird: "Why did the scarecrow win an award? He was outstanding in his field!"
+  Bug (already walking off): "And there he goes."
+  Chirp: "Outstanding. In a field. We get it."`
     };
 
     // Dynamic schema based on character selection
@@ -1803,7 +1849,9 @@ HOPE AND PERSISTENCE:
 Showing up anyway. Trying again after it did not work. Believing in something when the evidence is thin. The small quiet victories that no one else sees but you know happened. Building something slowly when fast would feel better. The gap between where you are and where you thought you would be -- and deciding to keep going anyway.`;
     const MTFI_FUEL = `== HOW TO REACT (this series) ==
 The writer's topic above is the THING you are reacting to -- a post, a quote, a snippet of conversation, or a shared experience. Fire back a funny, conversational response addressed to the whole room. Do NOT reach for deep human wounds or life lessons here. React to the actual thing, specifically, with the selected humor technique. The laugh is the point; the warmth is just the fact that everyone's in on it.`;
-    const woundLibrary = (series === 'Make Them Feel Important') ? MTFI_FUEL : WOUND_LIBRARY;
+    const woundLibrary = (series === 'Make Them Feel Important') ? MTFI_FUEL
+                        : (series === 'Cheep Laughs') ? ''
+                        : WOUND_LIBRARY;
 
     return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
 
@@ -1836,7 +1884,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
 
 {
   "title": "Gag title (3-6 words)",
-  "series": "${series}",
+  "series": "${promptSeries}",
   "characters": "${selectedChar}",
   "panel_description": "${panelDescNote}. Specific: expressions, body language, setting, lighting, objects in frame. Director stage directions.",
   "visual_gag": "Core visual contradiction in one sentence.",
@@ -1944,7 +1992,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     }
 
     document.getElementById('outTitle').textContent = d.title || 'Untitled Gag';
-    document.getElementById('outSeries').textContent = d.series ? `// ${d.series}` : '// What the cartoonist draws';
+    document.getElementById('outSeries').textContent = (selectedSeries || d.series) ? `// ${selectedSeries || d.series}` : '// What the cartoonist draws';
     document.getElementById('outScene').textContent = d.panel_description || '';
     document.getElementById('outVisualGag').textContent = d.visual_gag || '';
     document.getElementById('outWhyItWorks').textContent = d.why_it_works || '';
@@ -1961,7 +2009,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     document.getElementById('outChirp').textContent = d.chirp || '';
 
     // Dynamic chirp subtitle based on series
-    const seriesLabel = d.series || selectedSeries || 'Seeds & Worms';
+    const seriesLabel = selectedSeries || d.series || 'Seeds & Worms';
     document.getElementById('outChirpSub').textContent = `// Printed at the bottom of the panel · ${seriesLabel.toUpperCase()} -- MVANNP`;
 
     const lineTypeEl = document.getElementById('outLineType');
