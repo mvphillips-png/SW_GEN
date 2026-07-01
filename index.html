@@ -1279,6 +1279,44 @@
     }
   };
 
+  // ── CHEEP LAUGHS anti-repeat ──
+  // Jokes collide fast (the pool of famous puns is tiny), so each generation gets a
+  // fresh, non-repeating SUBJECT to build an original joke around, plus a running
+  // list of what we just used so the model won't repeat itself.
+  const CL_SUBJECTS = [
+    "coffee","bananas","bread","cheese","eggs","pancakes","tacos","pickles","cookies","tea",
+    "cats","dogs","cows","bees","ants","fish","frogs","ducks","penguins","sharks","snails","owls","sheep",
+    "skeletons","ghosts","vampires","zombies","witches",
+    "atoms","computers","robots","the WiFi","batteries","magnets","math",
+    "socks","clocks","mirrors","umbrellas","keys","pillows","brooms","ladders","buttons",
+    "the ocean","snowmen","clouds","the moon","the sun","mountains","rivers",
+    "dentists","teachers","librarians","pirates","wizards","farmers","chefs",
+    "Mondays","sleep","calendars","elevators","echoes","shadows",
+    "bicycles","guitars","books","balloons","candles","boomerangs","escalators"
+  ];
+  let clSubjectBag = [], clLastSubject = null;
+  let clRecentJokes = [];   // signatures of recently generated jokes, to avoid repeats
+
+  function clNextSubject() {
+    if (clSubjectBag.length === 0) {
+      clSubjectBag = bbShuffle(CL_SUBJECTS);
+      if (clSubjectBag[clSubjectBag.length - 1] === clLastSubject && clSubjectBag.length > 1) {
+        [clSubjectBag[clSubjectBag.length - 1], clSubjectBag[clSubjectBag.length - 2]] =
+          [clSubjectBag[clSubjectBag.length - 2], clSubjectBag[clSubjectBag.length - 1]];
+      }
+    }
+    const s = clSubjectBag.pop();
+    clLastSubject = s;
+    return s;
+  }
+
+  function clRecordJoke(sig) {
+    sig = (sig || '').trim();
+    if (!sig) return;
+    clRecentJokes.push(sig);
+    if (clRecentJokes.length > 10) clRecentJokes.shift();
+  }
+
   function buildPrompt() {
     const freeform = document.getElementById('freeformInput').value.trim();
     const series = selectedSeries || 'Honestly Though';
@@ -1726,7 +1764,7 @@ SERIES: CHEEP LAUGHS
 Pure, lighthearted joke panels. One character tells a short, classic-style pun or one-liner; the other lands a quick, funny reaction. That's the whole thing. No deeper meaning, no truth underneath, no life lesson -- just a groan-worthy joke and a good comeback. This is the silliest, breeziest corner of the strip. Ignore any instinct to make it meaningful; here, the laugh IS the point.
 
 == THE JOKE ==
-A short, clean, groaner-style pun or one-liner -- the kind you'd read off a popsicle stick. Setup plus punchline, tight enough to fit in a speech bubble. Wordplay, puns, and dumb-in-the-best-way logic are the entire goal. Write ORIGINAL jokes in the spirit of these:
+A short, clean, groaner-style pun or one-liner -- the kind you'd read off a popsicle stick. Setup plus punchline, tight enough to fit in a speech bubble. Wordplay, puns, and dumb-in-the-best-way logic are the entire goal. The jokes below show the STYLE ONLY -- NEVER reproduce them; each panel must be a brand-new, original joke:
 - "Why don't skeletons ever fight? They don't have the guts."
 - "I used to be addicted to the hokey pokey... but I turned myself around."
 - "Why don't scientists trust atoms? Because they make up everything."
@@ -1814,6 +1852,23 @@ The panel must clearly show or state this routine so a reader knows exactly what
 Build the panel around the writer's topic above, but it MUST still surface one small, real, doable morning routine the reader could try tomorrow. Populate the "try_this" field with that routine as a short, plain, do-it-tomorrow instruction.`;
     }
 
+    // Cheep Laughs: force a fresh subject each time and forbid repeating recent jokes.
+    let jokeDirective = '';
+    if (series === 'Cheep Laughs') {
+      const subject = freeform ? freeform : clNextSubject();
+      jokeDirective = `
+
+== THIS JOKE'S SUBJECT (write a brand-new pun or one-liner about THIS) ==
+${subject}
+Invent an ORIGINAL joke about ${subject}. Do NOT reuse a famous existing joke, and do NOT default to skeletons, atoms, or scarecrows -- those are style references only, never to be reproduced.`;
+      if (clRecentJokes.length) {
+        jokeDirective += `
+
+== ALREADY USED THIS SESSION -- do NOT repeat or make a close variation of any of these ==
+${clRecentJokes.map((j, i) => `${i + 1}. ${j}`).join('\n')}`;
+      }
+    }
+
     const WOUND_LIBRARY = `== THE WOUND LIBRARY -- make people feel seen ==
 These are HUMAN anxieties. Not just creative people. Not just entrepreneurs. Anyone sitting on a branch trying to figure out what they are doing and why. The creative framing is just the costume -- the feelings underneath belong to everyone.
 Use the wound that fits the topic. Specific always beats vague. The more specific the feeling, the more universal the recognition.
@@ -1872,6 +1927,7 @@ CRITICAL: Follow this exactly. If it says Bug only, Baker Bird cannot speak or a
 == THIS PANEL'S SERIES ==
 ${seriesInstructions[series]}
 ${routineDirective}
+${jokeDirective}
 ${woundLibrary}
 
 == FORMAT: SINGLE-PANEL ONLY ==
@@ -1965,6 +2021,11 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       }
       lastData = parsed;
       renderOutput(parsed);
+      // Remember this joke so the next Cheep Laughs generation won't repeat it.
+      if (selectedSeries === 'Cheep Laughs') {
+        const jokeText = (parsed.dialogue || []).map(e => e.line).join(' ');
+        clRecordJoke(jokeText || parsed.chirp || parsed.title);
+      }
     } catch (err) {
       errorBox.textContent = `Couldn't generate the gag -- please tap Generate again. (${err.message})`;
       errorBox.style.display = 'block';
