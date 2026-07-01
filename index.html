@@ -1858,9 +1858,9 @@ Build the panel around the writer's topic above, but it MUST still surface one s
       const subject = freeform ? freeform : clNextSubject();
       jokeDirective = `
 
-== THIS JOKE'S SUBJECT (write a brand-new pun or one-liner about THIS) ==
-${subject}
-Invent an ORIGINAL joke about ${subject}. Do NOT reuse a famous existing joke, and do NOT default to skeletons, atoms, or scarecrows -- those are style references only, never to be reproduced.`;
+== THIS JOKE MUST BE ABOUT: ${subject} ==
+Write a brand-new, original pun or one-liner whose subject is ${subject}. The joke has to be clearly, specifically ABOUT ${subject}. Do NOT substitute a different subject -- NOT seeds, NOT worms, NOT birds, NOT "growing up," NOT anything from the Seeds & Worms world. If the punchline is not about ${subject}, the panel has FAILED. Baker Bird and Bug still deliver and react, but the joke itself is about ${subject}.
+Invent a fresh joke -- do NOT reuse a famous existing one (skeletons/atoms/scarecrows are style references only).`;
       if (clRecentJokes.length) {
         jokeDirective += `
 
