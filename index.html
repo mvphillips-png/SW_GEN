@@ -680,6 +680,23 @@
     font-family: 'Nunito', sans-serif; font-size: 13px; line-height: 1.45;
     color: rgba(255,251,232,0.7); margin-bottom: 14px;
   }
+  .bb-biz-chip-label {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(207,226,255,0.75); margin-bottom: 8px;
+  }
+  .bb-biz-chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+  .bb-biz-chip {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12.5px;
+    padding: 7px 13px; border-radius: 100px; cursor: pointer;
+    border: 2px solid #5b8def; background: rgba(20,40,80,0.55); color: #eaf2ff;
+    transition: all 0.12s ease;
+  }
+  .bb-biz-chip:hover { border-color: #93c5fd; background: rgba(40,70,130,0.6); }
+  .bb-biz-chip.active {
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-color: #93c5fd; color: #ffffff;
+  }
   .bb-biz-gen-btn {
     font-family: 'Fredoka One', cursive; font-size: 16px; letter-spacing: 0.03em;
     width: 100%; padding: 14px 20px; border-radius: 14px; border: none;
@@ -944,7 +961,9 @@
 
       <div id="bbBizWrap" class="bb-biz-container" style="display:none;">
         <div class="bb-biz-title">💼 All Business</div>
-        <div class="bb-biz-desc">A LinkedIn-shareable panel with a genuinely useful leadership tip — framed as a great way to start the day. For founders, managers, MBAs, and CEOs.</div>
+        <div class="bb-biz-desc">A LinkedIn-shareable panel with a proven, works-in-the-real-world tip — framed as a great way to start the day. For founders, managers, MBAs, and CEOs.</div>
+        <div class="bb-biz-chip-label">Pick a focus (or leave on All):</div>
+        <div class="bb-biz-chip-row" id="bbBizChipRow"></div>
         <button class="bb-biz-gen-btn" onclick="bbBizOfTheDay()">🎲 Business Tip of the Day</button>
       </div>
     </div>
@@ -1091,6 +1110,13 @@
 
 <script>
   const WORKER_URL = 'https://gravificer-proxy.mvphillips.workers.dev/';
+
+  // ── MODEL ──────────────────────────────────────────────────────────
+  // The Claude model that writes every panel. To upgrade to a newer model,
+  // change ONLY this one line. Current model names live at:
+  //   https://docs.claude.com/en/docs/about-claude/models
+  // (If your Cloudflare Worker hardcodes the model, update it there too.)
+  const MODEL = 'claude-sonnet-4-6';
   let selectedSeries = '';
   let selectedChar = 'Both';
   let selectedHumor = [];
@@ -1190,55 +1216,121 @@
      A LinkedIn-shareable variant: the routine is a genuinely useful
      management/leadership tip framed as a morning move. Its own
      library + shuffle-bag; toggled on with the All Business button. */
+  // 8 business domains, each stocked with proven, real-world best practices
+  // framed as a morning move. Filter chips let you pull from one domain or All.
+  const BB_BIZ_CATEGORIES = [
+    { key: 'All',                     icon: '\\u{1F4BC}' },
+    { key: 'Marketing',               icon: '\\u{1F4E3}' },
+    { key: 'Sales',                   icon: '\\u{1F91D}' },
+    { key: 'Strategy',                icon: '\\u265F\\uFE0F' },
+    { key: 'Operations',              icon: '\\u2699\\uFE0F' },
+    { key: 'Research & Development',  icon: '\\u{1F52C}' },
+    { key: 'Customer Experience',     icon: '\\u{1F60A}' },
+    { key: 'Training',                icon: '\\u{1F393}' },
+    { key: 'Branding',                icon: '\\u{1F3F7}\\uFE0F' }
+  ];
+
   const BB_BIZ_ROUTINES = [
-    { cat: 'Focus & Priorities', text: "Before you open email, write the ONE outcome that would make today a win." },
-    { cat: 'Focus & Priorities', text: "Time-block your first ninety minutes for deep work -- no meetings, no inbox." },
-    { cat: 'Focus & Priorities', text: "Cut today's to-do list down to the single most important thing, then start it." },
-    { cat: 'Focus & Priorities', text: "Ask 'what would make the biggest difference today?' and begin exactly there." },
-    { cat: 'Focus & Priorities', text: "Set one measurable target for the day and write it where you'll see it all day." },
-    { cat: 'Execution & Delegation', text: "Eat the frog: do the hardest, most-avoided task first, before anything else." },
-    { cat: 'Execution & Delegation', text: "Delegate one thing before lunch that only feels like it needs you." },
-    { cat: 'Execution & Delegation', text: "Name the one decision you've been avoiding -- and make it today." },
-    { cat: 'Execution & Delegation', text: "Batch your shallow work: answer messages in one window, not all day long." },
-    { cat: 'Leadership & People', text: "Send one message of genuine recognition to a teammate before 9am." },
-    { cat: 'Leadership & People', text: "Start the day by removing one obstacle for someone on your team." },
-    { cat: 'Leadership & People', text: "Ask your team one open question this morning -- and just listen before you direct." },
-    { cat: 'Leadership & People', text: "Give credit publicly for one win before you point out a single problem." },
-    { cat: 'Strategy & Thinking', text: "Block fifteen minutes of thinking time with yourself -- and actually keep it." },
-    { cat: 'Strategy & Thinking', text: "Spend five minutes on the important-but-not-urgent work before the urgent floods in." },
-    { cat: 'Strategy & Thinking', text: "Write down the assumption you're most likely wrong about this week." },
-    { cat: 'Strategy & Thinking', text: "Ask yourself: am I working on the right thing, or just a busy thing?" },
-    { cat: 'Strategy & Thinking', text: "Name today's single biggest bottleneck and aim your best energy at it." },
-    { cat: 'Strategy & Thinking', text: "Do a sixty-second future check: will this task still matter in a month?" },
-    { cat: 'Customer & Growth', text: "Start with one piece of real customer feedback before you touch the strategy." },
-    { cat: 'Customer & Growth', text: "Check the one metric that matters most -- then close the dashboard and go build." },
-    { cat: 'Customer & Growth', text: "Ask how one decision today moves you closer to the customer, not just the plan." },
-    { cat: 'Time & Energy', text: "Pre-commit your shutdown time today before the day expands to fill it." },
-    { cat: 'Time & Energy', text: "Schedule your hardest thinking for your peak energy hour, not your first hour." },
-    { cat: 'Time & Energy', text: "Protect the first hour from reactive work -- the inbox is other people's agenda." },
-    { cat: 'Time & Energy', text: "Write tomorrow's plan before you leave today, so morning-you starts already moving." },
-    { cat: 'Meetings & Comms', text: "Before your first meeting, write the one outcome you want from it in a sentence." },
-    { cat: 'Meetings & Comms', text: "Pick the one meeting worth protecting today and guard it from everything else." },
-    { cat: 'Meetings & Comms', text: "Audit your calendar and delete or delegate one thing that doesn't need you." },
-    { cat: 'Meetings & Comms', text: "Turn one recurring status meeting into a two-line written update this week." }
+    // MARKETING
+    { cat: 'Marketing', text: "Before you post anything, name the one customer pain your message solves today." },
+    { cat: 'Marketing', text: "Check yesterday's best-performing content and do more of what already worked." },
+    { cat: 'Marketing', text: "Rewrite one headline to lead with the benefit, not the feature." },
+    { cat: 'Marketing', text: "Go deep on one channel today instead of spreading thin across all of them." },
+    { cat: 'Marketing', text: "Read real customer language and steal their exact words for your next piece of copy." },
+    // SALES
+    { cat: 'Sales', text: "Follow up with one warm lead who went quiet -- most deals are won in the follow-up." },
+    { cat: 'Sales', text: "Before your next call, write the prospect's problem in their words, not your pitch." },
+    { cat: 'Sales', text: "On your next call, ask a question and listen twice as long as you talk." },
+    { cat: 'Sales', text: "Ask one happy customer for a referral -- referred leads close fastest." },
+    { cat: 'Sales', text: "Move one stalled deal forward with a single, clear next step." },
+    // STRATEGY
+    { cat: 'Strategy', text: "Write the one thing that must be true this quarter to win, and work backward from it." },
+    { cat: 'Strategy', text: "Name what you will NOT do this quarter -- strategy is choosing what to sacrifice." },
+    { cat: 'Strategy', text: "Revisit your riskiest assumption and design the cheapest test to check it." },
+    { cat: 'Strategy', text: "Ask which single bet, if it worked, would make the others matter less." },
+    { cat: 'Strategy', text: "Pick the one metric that best predicts long-term health and put it on the wall." },
+    // OPERATIONS
+    { cat: 'Operations', text: "Find today's biggest bottleneck and put your best resource on it -- nothing speeds up until it does." },
+    { cat: 'Operations', text: "Turn one task that lives only in your head into a written checklist." },
+    { cat: 'Operations', text: "Automate or delete one recurring manual step this week." },
+    { cat: 'Operations', text: "Walk one process end to end and remove a single unnecessary step." },
+    { cat: 'Operations', text: "Standardize one thing that keeps going wrong so it can't fail the same way twice." },
+    // RESEARCH & DEVELOPMENT
+    { cat: 'Research & Development', text: "Talk to one real user before you write a single line of the plan." },
+    { cat: 'Research & Development', text: "Ship the smallest version a real person can actually react to." },
+    { cat: 'Research & Development', text: "Frame today's work as a testable hypothesis, not a feature to finish." },
+    { cat: 'Research & Development', text: "Timebox one experiment so a dead end costs a day, not a quarter." },
+    { cat: 'Research & Development', text: "Ask what would have to be true for this idea to be huge -- then test that first." },
+    // CUSTOMER EXPERIENCE
+    { cat: 'Customer Experience', text: "Read one piece of raw customer feedback before a dashboard summarizes it away." },
+    { cat: 'Customer Experience', text: "Fix the single friction point customers complain about most -- remove effort, don't just add delight." },
+    { cat: 'Customer Experience', text: "Follow one customer's journey from first click to done and note where they hesitate." },
+    { cat: 'Customer Experience', text: "Reply to one customer personally before the queue swallows the day." },
+    { cat: 'Customer Experience', text: "Close the loop with someone who gave feedback and tell them what changed." },
+    // TRAINING
+    { cat: 'Training', text: "Teach one person one thing you know -- duplicating yourself is how you scale." },
+    { cat: 'Training', text: "Give one piece of specific, in-the-moment feedback instead of saving it for review season." },
+    { cat: 'Training', text: "Ask a teammate what they want to get better at, then hand them one chance to." },
+    { cat: 'Training', text: "Turn one recent mistake into a blame-free lesson the whole team learns from." },
+    { cat: 'Training', text: "Replace one 'let me just do it' with 'let me show you how.'" },
+    // BRANDING
+    { cat: 'Branding', text: "Say what you stand for in one sentence a customer would actually repeat." },
+    { cat: 'Branding', text: "Check that your last three touchpoints look and sound like the same company." },
+    { cat: 'Branding', text: "Cut one piece of jargon and say it the way a human would." },
+    { cat: 'Branding', text: "Name the one feeling you want people to have after meeting your brand, and design for it." },
+    { cat: 'Branding', text: "Pick the one thing you want to be known for and make today reinforce it, not dilute it." }
   ];
 
   let bbBizOpen = false;               // is the All Business container revealed
-  let bbBizBag = [], bbBizLast = null;
+  let bbBizFilter = 'All';             // active business domain
+  let bbBizBags = {};                  // one shuffle-bag per domain
+  let bbBizLastByFilter = {};          // last tip dealt per domain (no repeats)
   let bbBizPendingRoutine = '';        // one-shot business tip for the next generation
   let bbLastWasBiz = false;            // was the most recent Early Bird panel a business one
 
-  function bbNextBiz() {
-    if (bbBizBag.length === 0) {
-      bbBizBag = bbShuffle(BB_BIZ_ROUTINES);
-      if (bbBizBag.length > 1 && bbBizBag[bbBizBag.length - 1].text === bbBizLast) {
-        [bbBizBag[bbBizBag.length - 1], bbBizBag[bbBizBag.length - 2]] =
-          [bbBizBag[bbBizBag.length - 2], bbBizBag[bbBizBag.length - 1]];
+  function bbBizPoolFor(filter) {
+    return filter === 'All' ? BB_BIZ_ROUTINES : BB_BIZ_ROUTINES.filter(r => r.cat === filter);
+  }
+
+  // Returns {text, cat}, non-repeating within the chosen domain's bag.
+  function bbNextBiz(filter) {
+    filter = filter || bbBizFilter;
+    const pool = bbBizPoolFor(filter);
+    if (!bbBizBags[filter] || bbBizBags[filter].length === 0) {
+      const fresh = bbShuffle(pool);
+      const last = bbBizLastByFilter[filter];
+      if (fresh.length > 1 && fresh[fresh.length - 1].text === last) {
+        [fresh[fresh.length - 1], fresh[fresh.length - 2]] =
+          [fresh[fresh.length - 2], fresh[fresh.length - 1]];
       }
+      bbBizBags[filter] = fresh;
     }
-    const r = bbBizBag.pop();
-    bbBizLast = r.text;
+    const r = bbBizBags[filter].pop();
+    bbBizLastByFilter[filter] = r.text;
     return r;
+  }
+
+  function bbSetBizFilter(key) {
+    bbBizFilter = key;
+    document.querySelectorAll('.bb-biz-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.cat === key);
+    });
+  }
+
+  // Build the domain chips once, inside the container.
+  function bbBuildBizChips() {
+    const row = document.getElementById('bbBizChipRow');
+    if (!row || row.dataset.built) return;
+    BB_BIZ_CATEGORIES.forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'bb-biz-chip' + (c.key === bbBizFilter ? ' active' : '');
+      b.dataset.cat = c.key;
+      b.type = 'button';
+      b.textContent = `${c.icon} ${c.key}`;
+      b.addEventListener('click', () => bbSetBizFilter(c.key));
+      row.appendChild(b);
+    });
+    row.dataset.built = '1';
   }
 
   // All Business is purely additive: toggling it just reveals its OWN container.
@@ -1249,6 +1341,7 @@
     if (btn) btn.classList.toggle('active', bbBizOpen);
     const wrap = document.getElementById('bbBizWrap');
     if (wrap) wrap.style.display = bbBizOpen ? 'block' : 'none';
+    if (bbBizOpen) bbBuildBizChips();
   }
 
   // Generate a business panel from the All Business container's own button.
@@ -1258,7 +1351,7 @@
     if (ebBtn) ebBtn.classList.add('active');
     selectedSeries = 'Early Bird Routines';
     document.getElementById('freeformInput').value = '';
-    bbBizPendingRoutine = bbNextBiz();   // one-shot; only this generation is business
+    bbBizPendingRoutine = bbNextBiz(bbBizFilter);   // one-shot; draws from the chosen domain
     generateStrip();
   }
 
@@ -2138,7 +2231,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: MODEL,
         max_tokens: 2000,
         messages: [{ role: 'user', content: buildPrompt() }]
       })
@@ -2540,7 +2633,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: MODEL,
           max_tokens: 1200,
           messages: [{ role: 'user', content: bzBuildPrompt(idea) }]
         })
