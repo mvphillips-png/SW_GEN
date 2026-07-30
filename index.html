@@ -630,7 +630,7 @@
   .bb-chip-label {
     font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px;
     letter-spacing: 0.06em; text-transform: uppercase;
-    color: rgba(255,251,232,0.55); margin-bottom: 8px;
+    color: rgba(26,10,46,0.62); margin-bottom: 8px;
   }
   .bb-chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
   .bb-chip {
@@ -645,6 +645,52 @@
     background: linear-gradient(180deg, #ffd76b, #ffb347);
     border-color: #ffb347; color: #4a3500;
   }
+  .bb-biz-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 14px; padding-bottom: 14px;
+    border-bottom: 1px dashed rgba(255,251,232,0.18);
+  }
+  .bb-biz-btn {
+    font-family: 'Fredoka One', cursive; font-size: 14px; letter-spacing: 0.03em;
+    padding: 10px 20px; border-radius: 100px; cursor: pointer;
+    border: 2.5px solid #14315f; background: #1e40af; color: #ffffff;
+    box-shadow: 0 4px 0 #0f2547; position: relative; top: 0;
+    transition: all 0.12s ease; text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+  }
+  .bb-biz-btn:hover { top: -2px; box-shadow: 0 6px 0 #0f2547; }
+  .bb-biz-btn:active { top: 3px; box-shadow: 0 1px 0 #0f2547; }
+  .bb-biz-btn.active {
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-color: #93c5fd; color: #ffffff; box-shadow: 0 4px 0 #14315f;
+  }
+  .bb-biz-note {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; line-height: 1.3;
+    color: rgba(26,10,46,0.62);
+  }
+  .bb-biz-container {
+    margin-top: 14px; padding: 16px 16px 18px; border-radius: 16px;
+    border: 2.5px solid #2f6fed;
+    background: linear-gradient(180deg, rgba(47,111,237,0.18), rgba(30,50,90,0.30));
+  }
+  .bb-biz-title {
+    font-family: 'Fredoka One', cursive; font-size: 16px; letter-spacing: 0.03em;
+    color: #cfe2ff; margin-bottom: 6px;
+  }
+  .bb-biz-desc {
+    font-family: 'Nunito', sans-serif; font-size: 13px; line-height: 1.45;
+    color: rgba(255,251,232,0.7); margin-bottom: 14px;
+  }
+  .bb-biz-gen-btn {
+    font-family: 'Fredoka One', cursive; font-size: 16px; letter-spacing: 0.03em;
+    width: 100%; padding: 14px 20px; border-radius: 14px; border: none;
+    color: #fff; cursor: pointer;
+    background: linear-gradient(180deg, #3b7bff, #1e4fc4);
+    box-shadow: 0 5px 0 #16307a; position: relative; top: 0; transition: all 0.1s ease;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  }
+  .bb-biz-gen-btn:hover { top: -2px; box-shadow: 0 7px 0 #16307a; }
+  .bb-biz-gen-btn:active { top: 4px; box-shadow: 0 1px 0 #16307a; }
+
   .bb-routine-btn {
     font-family: 'Fredoka One', cursive;
     font-size: 16px; letter-spacing: 0.03em;
@@ -657,8 +703,8 @@
   .bb-routine-btn:hover { top: -2px; box-shadow: 0 7px 0 #c8870f; }
   .bb-routine-btn:active { top: 4px; box-shadow: 0 1px 0 #c8870f; }
   .bb-routine-hint {
-    font-family: 'Nunito', sans-serif; font-size: 12.5px; line-height: 1.4;
-    color: rgba(255,251,232,0.55); margin-top: 8px; text-align: center;
+    font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 12.5px; line-height: 1.4;
+    color: rgba(26,10,46,0.65); margin-top: 8px; text-align: center;
   }
 
   /* ── TRY THIS (Early Bird output) ── */
@@ -886,10 +932,21 @@
     </div>
 
     <div id="bbRoutineWrap" style="display:none; margin-top:14px;">
-      <div class="bb-chip-label">Pick a well (or leave on Any):</div>
+      <div class="bb-chip-label" id="bbChipLabel">Pick a well (or leave on Any):</div>
       <div class="bb-chip-row" id="bbChipRow"></div>
-      <button class="bb-routine-btn" onclick="bbRoutineOfTheDay()">🎲 Routine of the Day</button>
-      <div class="bb-routine-hint">A fresh, do-it-tomorrow morning routine every time — never the same one twice in a cycle.</div>
+      <button class="bb-routine-btn" id="bbRoutineBtn" onclick="bbRoutineOfTheDay()">🎲 Routine of the Day</button>
+      <div class="bb-routine-hint" id="bbRoutineHint">A fresh, do-it-tomorrow morning routine every time — never the same one twice in a cycle.</div>
+
+      <div class="bb-biz-row">
+        <button class="bb-biz-btn" id="bbBizBtn" onclick="bbToggleBiz()">💼 All Business</button>
+        <span class="bb-biz-note">A separate LinkedIn-ready mode — tap to open</span>
+      </div>
+
+      <div id="bbBizWrap" class="bb-biz-container" style="display:none;">
+        <div class="bb-biz-title">💼 All Business</div>
+        <div class="bb-biz-desc">A LinkedIn-shareable panel with a genuinely useful leadership tip — framed as a great way to start the day. For founders, managers, MBAs, and CEOs.</div>
+        <button class="bb-biz-gen-btn" onclick="bbBizOfTheDay()">🎲 Business Tip of the Day</button>
+      </div>
     </div>
 
     <hr class="card-rule">
@@ -932,7 +989,7 @@
 
     <!-- Try This (Early Bird only) -->
     <div class="try-this-card" id="tryThisCard">
-      <div class="try-this-label">🌅 Try This Tomorrow <span class="try-this-well" id="outTryWell"></span></div>
+      <div class="try-this-label"><span id="outTryLabel">🌅 Try This Tomorrow</span> <span class="try-this-well" id="outTryWell"></span></div>
       <div class="try-this-text" id="outTryThis">–</div>
     </div>
 
@@ -1128,6 +1185,82 @@
   let bbPendingRoutine = '';   // {text,cat} set by Routine of the Day
   let bbActiveRoutine = '';    // routine text used in the most recent generation
   let bbActiveCategory = '';   // its well, for the Try This label
+
+  /* ── ALL BUSINESS MODE (Early Bird) ──────────────────────────
+     A LinkedIn-shareable variant: the routine is a genuinely useful
+     management/leadership tip framed as a morning move. Its own
+     library + shuffle-bag; toggled on with the All Business button. */
+  const BB_BIZ_ROUTINES = [
+    { cat: 'Focus & Priorities', text: "Before you open email, write the ONE outcome that would make today a win." },
+    { cat: 'Focus & Priorities', text: "Time-block your first ninety minutes for deep work -- no meetings, no inbox." },
+    { cat: 'Focus & Priorities', text: "Cut today's to-do list down to the single most important thing, then start it." },
+    { cat: 'Focus & Priorities', text: "Ask 'what would make the biggest difference today?' and begin exactly there." },
+    { cat: 'Focus & Priorities', text: "Set one measurable target for the day and write it where you'll see it all day." },
+    { cat: 'Execution & Delegation', text: "Eat the frog: do the hardest, most-avoided task first, before anything else." },
+    { cat: 'Execution & Delegation', text: "Delegate one thing before lunch that only feels like it needs you." },
+    { cat: 'Execution & Delegation', text: "Name the one decision you've been avoiding -- and make it today." },
+    { cat: 'Execution & Delegation', text: "Batch your shallow work: answer messages in one window, not all day long." },
+    { cat: 'Leadership & People', text: "Send one message of genuine recognition to a teammate before 9am." },
+    { cat: 'Leadership & People', text: "Start the day by removing one obstacle for someone on your team." },
+    { cat: 'Leadership & People', text: "Ask your team one open question this morning -- and just listen before you direct." },
+    { cat: 'Leadership & People', text: "Give credit publicly for one win before you point out a single problem." },
+    { cat: 'Strategy & Thinking', text: "Block fifteen minutes of thinking time with yourself -- and actually keep it." },
+    { cat: 'Strategy & Thinking', text: "Spend five minutes on the important-but-not-urgent work before the urgent floods in." },
+    { cat: 'Strategy & Thinking', text: "Write down the assumption you're most likely wrong about this week." },
+    { cat: 'Strategy & Thinking', text: "Ask yourself: am I working on the right thing, or just a busy thing?" },
+    { cat: 'Strategy & Thinking', text: "Name today's single biggest bottleneck and aim your best energy at it." },
+    { cat: 'Strategy & Thinking', text: "Do a sixty-second future check: will this task still matter in a month?" },
+    { cat: 'Customer & Growth', text: "Start with one piece of real customer feedback before you touch the strategy." },
+    { cat: 'Customer & Growth', text: "Check the one metric that matters most -- then close the dashboard and go build." },
+    { cat: 'Customer & Growth', text: "Ask how one decision today moves you closer to the customer, not just the plan." },
+    { cat: 'Time & Energy', text: "Pre-commit your shutdown time today before the day expands to fill it." },
+    { cat: 'Time & Energy', text: "Schedule your hardest thinking for your peak energy hour, not your first hour." },
+    { cat: 'Time & Energy', text: "Protect the first hour from reactive work -- the inbox is other people's agenda." },
+    { cat: 'Time & Energy', text: "Write tomorrow's plan before you leave today, so morning-you starts already moving." },
+    { cat: 'Meetings & Comms', text: "Before your first meeting, write the one outcome you want from it in a sentence." },
+    { cat: 'Meetings & Comms', text: "Pick the one meeting worth protecting today and guard it from everything else." },
+    { cat: 'Meetings & Comms', text: "Audit your calendar and delete or delegate one thing that doesn't need you." },
+    { cat: 'Meetings & Comms', text: "Turn one recurring status meeting into a two-line written update this week." }
+  ];
+
+  let bbBizOpen = false;               // is the All Business container revealed
+  let bbBizBag = [], bbBizLast = null;
+  let bbBizPendingRoutine = '';        // one-shot business tip for the next generation
+  let bbLastWasBiz = false;            // was the most recent Early Bird panel a business one
+
+  function bbNextBiz() {
+    if (bbBizBag.length === 0) {
+      bbBizBag = bbShuffle(BB_BIZ_ROUTINES);
+      if (bbBizBag.length > 1 && bbBizBag[bbBizBag.length - 1].text === bbBizLast) {
+        [bbBizBag[bbBizBag.length - 1], bbBizBag[bbBizBag.length - 2]] =
+          [bbBizBag[bbBizBag.length - 2], bbBizBag[bbBizBag.length - 1]];
+      }
+    }
+    const r = bbBizBag.pop();
+    bbBizLast = r.text;
+    return r;
+  }
+
+  // All Business is purely additive: toggling it just reveals its OWN container.
+  // The wellness wells, chips, and Routine of the Day button are never touched.
+  function bbToggleBiz() {
+    bbBizOpen = !bbBizOpen;
+    const btn = document.getElementById('bbBizBtn');
+    if (btn) btn.classList.toggle('active', bbBizOpen);
+    const wrap = document.getElementById('bbBizWrap');
+    if (wrap) wrap.style.display = bbBizOpen ? 'block' : 'none';
+  }
+
+  // Generate a business panel from the All Business container's own button.
+  function bbBizOfTheDay() {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    const ebBtn = document.querySelector('[data-cat="Early Bird Routines"]');
+    if (ebBtn) ebBtn.classList.add('active');
+    selectedSeries = 'Early Bird Routines';
+    document.getElementById('freeformInput').value = '';
+    bbBizPendingRoutine = bbNextBiz();   // one-shot; only this generation is business
+    generateStrip();
+  }
 
   function bbShuffle(arr) {
     const a = arr.slice();
@@ -1829,8 +1962,29 @@ The branch or the Nest, casual and relaxed. One character mid-joke, the other mi
     // Early Bird Routines: deal a fresh, non-repeating routine kernel so every
     // morning brings a different real thing to try. If the writer typed their
     // own topic, that drives instead and we let the model surface a fitting one.
+    // Early Bird: business one-shot (from the All Business container) takes priority;
+    // otherwise the normal wellness routine path runs exactly as before.
+    const isBizGen = (series === 'Early Bird Routines' && bbBizPendingRoutine && !!bbBizPendingRoutine.text);
+    bbLastWasBiz = isBizGen;
     let routineDirective = '';
-    if (series === 'Early Bird Routines' && !freeform) {
+    if (isBizGen) {
+      const biz = bbBizPendingRoutine;
+      bbBizPendingRoutine = '';
+      bbActiveRoutine = biz.text;
+      bbActiveCategory = biz.cat || 'All Business';
+      routineDirective = `
+
+== ALL BUSINESS MODE (this is a LinkedIn-shareable post) ==
+Audience: founders, entrepreneurs, managers, MBAs, operators, and CEOs -- anyone running a business. Goal: someone scrolling LinkedIn sees this cartoon, thinks "that's a genuinely great way to start my day," and shares it.
+It is still the Seeds & Worms cartoon. Baker Bird is the eager founder trying the tactic; Bug is the seasoned operator whose line makes it land (dry, sharp, true). Funny AND credible -- the humor makes it shareable, the insight makes it worth sharing.
+The "chirp" is the LinkedIn-quotable line: sharp, clear, a little witty, genuinely useful. Under 15 words. NO hashtags, NO emojis, no buzzword salad, no cringe.
+HARD GUARDRAILS: Smart, professional, human. NO hustle-culture or overwork glorification -- never "grind at 4am," never "sleep is for the weak," never "outwork everyone." The best leaders protect focus, energy, and their people; keep it sustainable. Say it plainly enough that a first-time founder AND a CEO both nod.
+
+== TODAY'S BUSINESS MOVE (build the ENTIRE panel around THIS specific tip) ==
+AREA: ${biz.cat}
+TIP: ${biz.text}
+Put this exact tip in the "try_this" field, phrased as a crisp, do-it-tomorrow leadership move.`;
+    } else if (series === 'Early Bird Routines' && !freeform) {
       const routine = (bbPendingRoutine && bbPendingRoutine.text)
         ? bbPendingRoutine
         : bbNextRoutine();
@@ -1906,6 +2060,7 @@ Showing up anyway. Trying again after it did not work. Believing in something wh
 The writer's topic above is the THING you are reacting to -- a post, a quote, a snippet of conversation, or a shared experience. Fire back a funny, conversational response addressed to the whole room. Do NOT reach for deep human wounds or life lessons here. React to the actual thing, specifically, with the selected humor technique. The laugh is the point; the warmth is just the fact that everyone's in on it.`;
     const woundLibrary = (series === 'Make Them Feel Important') ? MTFI_FUEL
                         : (series === 'Cheep Laughs') ? ''
+                        : isBizGen ? ''
                         : WOUND_LIBRARY;
 
     return `You are a single-panel gag cartoon script generator for "Seeds & Worms" by MVANNP (Quirky Flash Chronicles).
@@ -2047,6 +2202,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     if (tryText && (d.series === 'Early Bird Routines' || selectedSeries === 'Early Bird Routines')) {
       document.getElementById('outTryThis').textContent = tryText;
       document.getElementById('outTryWell').textContent = bbActiveCategory || '';
+      document.getElementById('outTryLabel').textContent = bbLastWasBiz ? '💼 Today’s Business Move' : '🌅 Try This Tomorrow';
       tryCard.classList.add('visible');
     } else {
       tryCard.classList.remove('visible');
