@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Seeds &amp; Worms Generator | Chirps for Thought</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&family=Boogaloo&display=swap" rel="stylesheet">
+<!-- jsPDF: draws the PDF as real text (same library + version as CITYSCOPE) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1096,6 +1098,7 @@
     <div class="action-row">
       <button class="action-btn" onclick="generateStrip()">↺ Generate Another</button>
       <button class="action-btn" onclick="copyScript()">⎘ Copy Script</button>
+      <button class="action-btn" id="pdfBtn" onclick="downloadPDF()">⬇ Download PDF</button>
       <span class="copy-confirm" id="copyConfirm">✦ Copied!</span>
     </div>
 
@@ -1137,6 +1140,7 @@
       <div class="bz-action-row">
         <button class="bz-action-btn" onclick="bzGenerate(false)">↺ Another</button>
         <button class="bz-action-btn" onclick="bzCopyScript()">⎘ Copy Script</button>
+        <button class="bz-action-btn" id="bzPdfBtn" onclick="bzDownloadPDF()">⬇ Download PDF</button>
         <span class="bz-copy-confirm" id="bzCopyConfirm">✦ Copied!</span>
       </div>
     </div>
@@ -2898,6 +2902,313 @@ Respond ONLY with valid JSON. No markdown, no preamble:
     const el = document.getElementById('bzCopyConfirm');
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  /* ════════════════════════════════════════════════════
+     PDF EXPORT  — native-text PDF, built on the CITYSCOPE lessons:
+     1. Draws REAL text + shapes with jsPDF. No screenshots, so light text on
+        a dark page stays crisp, and the file is a few KB, not MB.
+     2. Standard PDF fonts only cover basic Latin letters, so pdfSafe() swaps
+        curly quotes / dashes / arrows and drops emoji before drawing.
+     3. Every field is read defensively (pdfPick), so a renamed or missing
+        field from the model can never blank out or crash the PDF.
+     4. If jsPDF didn't load (offline / CDN hiccup), falls back to Print.
+     ════════════════════════════════════════════════════ */
+
+  function pdfSafe(s) {
+    if (s === null || s === undefined) return '';
+    if (typeof s === 'object') s = Array.isArray(s) ? s.join(', ') : JSON.stringify(s);
+    return String(s)
+      .replace(/\r/g, '')
+      .replace(/[‘’‚′]/g, "'")
+      .replace(/[“”„″]/g, '"')
+      .replace(/—/g, '--')
+      .replace(/[–−‐‑]/g, '-')
+      .replace(/…/g, '...')
+      .replace(/[•●▪]/g, '-')
+      .replace(/[→➡➔]/g, '->')
+      .replace(/←/g, '<-')
+      .replace(/[✗✘❌]/g, 'x')
+      .replace(/[✓✔✅]/g, 'v')
+      .replace(/ /g, ' ')
+      .replace(/[\x80-\x9F]/g, '')
+      .replace(/[^\x00-\xFF]/g, '')        // emoji + anything the PDF font can't draw
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/ +([.,!?;])/g, '$1')        // tidy the gap an emoji leaves behind
+      .trim();
+  }
+
+  function pdfPick(o, keys) {
+    if (!o || typeof o !== 'object') return undefined;
+    for (const k of keys) { if (o[k] !== null && o[k] !== undefined && o[k] !== '') return o[k]; }
+    return undefined;
+  }
+
+  function pdfSlug(s) {
+    return pdfSafe(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'panel';
+  }
+
+  function pdfDateStamp() {
+    const n = new Date();
+    const p = x => String(x).padStart(2, '0');
+    return `${n.getFullYear()}-${p(n.getMonth() + 1)}-${p(n.getDate())}`;
+  }
+
+  function pdfPrettyDate() {
+    try { return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+    catch (e) { return pdfDateStamp(); }
+  }
+
+  // Colors as [r,g,b]. Dark QFC purple for Seeds & Worms, cream paper for Bizarre.
+  const PDF_THEME_SW = {
+    bg: [26,15,51], panel: [42,26,74], text: [255,251,232], body: [232,226,244], muted: [165,155,190],
+    rule: [70,52,110], yellow: [255,229,53], lime: [200,240,0], pink: [240,62,140],
+    teal: [44,191,176], orange: [255,124,42], purple: [167,139,250]
+  };
+  const PDF_THEME_BZ = {
+    bg: [244,236,216], panel: [232,221,194], text: [26,20,13], body: [48,40,30], muted: [122,110,92],
+    rule: [200,188,160], accent: [196,86,18]
+  };
+
+  // A tiny page-layout kit on top of jsPDF: wrapping, page breaks, headers, boxes.
+  function pdfBegin(C) {
+    const { jsPDF } = window.jspdf;
+    const P = new jsPDF({ unit: 'pt', format: 'letter', compress: true });
+    const PW = P.internal.pageSize.getWidth(), PH = P.internal.pageSize.getHeight();
+    const M = 50, CW = PW - 2 * M, BOTTOM = PH - 56;
+    const K = { P, PW, PH, M, CW, C, y: M };
+    const paint = () => { P.setFillColor(C.bg[0], C.bg[1], C.bg[2]); P.rect(0, 0, PW, PH, 'F'); };
+    paint();
+
+    K.newPage = () => { P.addPage(); paint(); K.y = M; };
+    K.need = h => { if (K.y + h > BOTTOM) { K.newPage(); return true; } return false; };
+    K.font = (style, size, rgb) => {
+      const fam = (style === 'mono' || style === 'monobold') ? 'courier' : 'helvetica';
+      const wt = (style === 'bold' || style === 'monobold') ? 'bold' : (style === 'italic' ? 'italic' : 'normal');
+      P.setFont(fam, wt); P.setFontSize(size); P.setTextColor(rgb[0], rgb[1], rgb[2]);
+    };
+    K.wrap = (str, w, style, size) => { K.font(style, size, C.text); return P.splitTextToSize(pdfSafe(str), w); };
+    // Wrapped paragraph that flows across pages.
+    K.para = (str, opts) => {
+      const o = Object.assign({ x: M, w: CW, size: 11, style: 'normal', rgb: C.body, lh: null }, opts || {});
+      const s = pdfSafe(str); if (!s) return;
+      const step = o.lh || o.size * 1.42;
+      const lines = K.wrap(s, o.w, o.style, o.size);
+      for (const ln of lines) { K.need(step); K.font(o.style, o.size, o.rgb); P.text(ln, o.x, K.y + o.size * 0.82); K.y += step; }
+    };
+    K.rule = (rgb, weight) => { P.setDrawColor(rgb[0], rgb[1], rgb[2]); P.setLineWidth(weight || 0.7); P.line(M, K.y, M + CW, K.y); };
+    K.sectionHead = (name, rgb, sub) => {
+      K.y += 14; K.need(34);
+      const label = pdfSafe(name).toUpperCase();
+      K.font('bold', 12, rgb); P.text(label, M, K.y + 10);
+      if (sub) { const nw = P.getTextWidth(label); K.font('mono', 8, C.muted); P.text(pdfSafe(sub), M + nw + 10, K.y + 9.5); }
+      K.y += 17; K.rule(C.rule, 0.6); K.y += 11;
+    };
+    // Small uppercase label + paragraph.
+    K.labeled = (label, body, rgb) => {
+      const s = pdfSafe(body); if (!s) return;
+      K.y += 6; K.need(34);
+      K.font('monobold', 8.5, rgb); P.text(pdfSafe(label).toUpperCase(), M, K.y + 7); K.y += 14;
+      K.para(s, { size: 10.5, lh: 15 }); K.y += 2;
+    };
+    // Filled box with a colored left bar, a label, and wrapped text.
+    K.box = (label, body, rgb, opts) => {
+      const o = Object.assign({ size: 12, style: 'normal', rgb: C.text, fill: C.panel }, opts || {});
+      const s = pdfSafe(body); if (!s) return;
+      const pad = 14, lh = o.size * 1.4;
+      const lines = K.wrap(s, CW - 2 * pad - 4, o.style, o.size);
+      const boxH = pad + 12 + lines.length * lh + pad - 2;
+      K.y += 8;
+      if (boxH > (BOTTOM - M)) { K.labeled(label, s, rgb); return; }   // absurdly long: flow it instead
+      K.need(boxH);
+      P.setFillColor(o.fill[0], o.fill[1], o.fill[2]); P.rect(M, K.y, CW, boxH, 'F');
+      P.setFillColor(rgb[0], rgb[1], rgb[2]); P.rect(M, K.y, 3.5, boxH, 'F');
+      let by = K.y + pad + 6;
+      K.font('monobold', 8.5, rgb); P.text(pdfSafe(label).toUpperCase(), M + pad + 4, by); by += 10;
+      K.font(o.style, o.size, o.rgb);
+      for (const ln of lines) { P.text(ln, M + pad + 4, by + o.size * 0.82); by += lh; }
+      K.y += boxH + 4;
+    };
+    K.footer = (left) => {
+      const total = P.getNumberOfPages();
+      for (let p = 1; p <= total; p++) {
+        P.setPage(p); K.font('mono', 7, C.muted);
+        P.text(pdfSafe(left), M, PH - 28);
+        P.text(`p ${p} / ${total}`, PW - M, PH - 28, { align: 'right' });
+      }
+    };
+    return K;
+  }
+
+  // Builds the Seeds & Worms panel script PDF. Returns the jsPDF doc (no download).
+  function buildSwPDF(d, seriesName, extra) {
+    extra = extra || {};
+    const C = PDF_THEME_SW;
+    const K = pdfBegin(C), P = K.P, M = K.M, CW = K.CW;
+    const series = pdfSafe(seriesName || pdfPick(d, ['series']) || 'Seeds & Worms');
+    const title = pdfPick(d, ['title', 'gag_title', 'name']) || 'Untitled Gag';
+
+    // ── Header
+    K.y = M + 4;
+    K.font('mono', 8.5, C.teal); P.text('QUIRKY FLASH CHRONICLES  ·  SINGLE-PANEL GAG SCRIPT', M, K.y + 7); K.y += 30;
+    K.font('bold', 30, C.yellow); P.text('SEEDS & WORMS', M, K.y + 22); K.y += 34;
+    K.font('bold', 12, C.lime); P.text(series.toUpperCase(), M, K.y + 10); K.y += 20;
+    K.rule(C.pink, 1.2); K.y += 18;
+    K.para(title, { size: 20, style: 'bold', rgb: C.text, lh: 24 });
+    K.font('mono', 8.5, C.muted); P.text('Generated ' + pdfSafe(pdfPrettyDate()) + '  ·  MVANNP', M, K.y + 8); K.y += 16;
+
+    // ── Early Bird: Try This / Business Move
+    const tryText = pdfPick(d, ['try_this', 'tryThis', 'routine']) || extra.routine || '';
+    if (series === 'Early Bird Routines' && pdfSafe(tryText)) {
+      const lab = (extra.isBiz ? "Today's business move" : 'Try this tomorrow') + (extra.category ? '  ·  ' + extra.category : '');
+      K.box(lab, tryText, C.orange, { size: 13, style: 'bold' });
+    }
+
+    // ── Glass Half Fowl: the Net Gains ledger
+    const ng = pdfPick(d, ['net_gains', 'netGains', 'ledger']);
+    if (series === 'Glass Half Fowl' && ng && typeof ng === 'object') {
+      K.sectionHead('Net Gains', C.lime, "Bug's clipboard · audited upsides only");
+      const signW = 22, tagW = 78;
+      const row = (sign, signRgb, text, opts) => {
+        opts = opts || {};
+        const s = pdfSafe(text); if (!s) return;
+        const size = opts.net ? 12.5 : 10.5, style = opts.net ? 'bold' : 'normal', lh = size * 1.42;
+        const w = CW - signW - (opts.struck ? tagW : 0);
+        const lines = K.wrap(s, w, style, size);
+        const h = lines.length * lh + 9;
+        K.need(h);
+        K.font('bold', 13, signRgb); P.text(sign, M + 4, K.y + 11);
+        const rgb = opts.struck ? C.muted : (opts.net ? C.yellow : C.text);
+        let ly = K.y;
+        lines.forEach(ln => {
+          K.font(style, size, rgb); P.text(ln, M + signW, ly + size * 0.82 + 1);
+          if (opts.struck) {                             // strike-through, like Bug's pencil
+            const tw = P.getTextWidth(ln);
+            P.setDrawColor(C.muted[0], C.muted[1], C.muted[2]); P.setLineWidth(0.8);
+            P.line(M + signW, ly + size * 0.5 + 1, M + signW + tw, ly + size * 0.5 + 1);
+          }
+          ly += lh;
+        });
+        if (opts.struck) { K.font('monobold', 7.5, C.pink); P.text('x FAILED AUDIT', M + CW, K.y + 9, { align: 'right' }); }
+        K.y += h;
+        if (!opts.net) { P.setDrawColor(C.rule[0], C.rule[1], C.rule[2]); P.setLineWidth(0.4); P.line(M, K.y - 4, M + CW, K.y - 4); }
+      };
+      row('-', C.pink, pdfPick(ng, ['cost', 'downside', 'minus', 'loss']));
+      const gains = Array.isArray(ng.gains) ? ng.gains : (Array.isArray(ng.plus) ? ng.plus : []);
+      gains.forEach(g => {
+        const text = (g && typeof g === 'object') ? pdfPick(g, ['gain', 'text', 'n', 'name', 'item']) : g;
+        const surv = (g && typeof g === 'object') ? !(g.survives === false || g.survives === 'false') : true;
+        row('+', C.lime, text, { struck: !surv });
+      });
+      K.y += 4;
+      row('=', C.yellow, pdfPick(ng, ['net', 'bottom_line', 'total', 'result']), { net: true });
+    }
+
+    // ── The Panel
+    K.sectionHead('The Panel', C.teal, 'what the cartoonist draws');
+    K.para(pdfPick(d, ['panel_description', 'panel', 'scene', 'description']), { size: 11, lh: 16 });
+    K.labeled('Visual gag', pdfPick(d, ['visual_gag', 'visualGag', 'gag']), C.teal);
+    let tags = pdfPick(d, ['tags', 'tag']);
+    if (typeof tags === 'string') tags = tags.split(',');
+    if (Array.isArray(tags) && tags.length) {
+      K.y += 6; K.need(16);
+      K.para('TAGS:  ' + tags.map(pdfSafe).filter(Boolean).join('  ·  '), { size: 8.5, style: 'mono', rgb: C.muted, lh: 12 });
+    }
+
+    // ── The Text
+    const typeLabels = { caption: 'caption below panel', single: 'one character speaks', dialogue: 'exchange in speech bubbles' };
+    K.sectionHead('The Text', C.pink, typeLabels[pdfPick(d, ['text_type'])] || 'what gets lettered');
+    let dlg = pdfPick(d, ['dialogue', 'lines', 'text']);
+    if (typeof dlg === 'string') dlg = [dlg];
+    (Array.isArray(dlg) ? dlg : []).forEach(e => {
+      let who = '', line = '';
+      if (typeof e === 'string') { const i = e.indexOf(':'); if (i > 0 && i < 30) { who = e.slice(0, i); line = e.slice(i + 1); } else { line = e; } }
+      else { who = pdfPick(e, ['speaker', 'character', 'who', 'name']) || ''; line = pdfPick(e, ['line', 'text', 'dialogue', 'says']) || ''; }
+      who = pdfSafe(who); line = pdfSafe(line).replace(/^"+|"+$/g, '');
+      if (!line) return;
+      const isCap = /^caption$/i.test(who) || !who;
+      const whoRgb = isCap ? C.muted : (/^baker/i.test(who) ? C.orange : (/^bug/i.test(who) ? C.lime : C.teal));
+      const colW = 104, size = 12, lh = 16.5;
+      const wl = K.wrap((isCap ? 'CAPTION' : who).toUpperCase(), colW - 10, 'bold', 9);
+      const ll = K.wrap('"' + line + '"', CW - colW, 'normal', size);
+      const h = Math.max(wl.length * 11, ll.length * lh) + 10;
+      K.need(h);
+      K.font('bold', 9, whoRgb); wl.forEach((t, i) => P.text(t, M, K.y + 10 + i * 11));
+      K.font('normal', size, C.text); ll.forEach((t, i) => P.text(t, M + colW, K.y + 10 + i * lh));
+      K.y += h;
+    });
+    K.labeled('Why it works', pdfPick(d, ['why_it_works', 'whyItWorks', 'why']), C.pink);
+    K.labeled('Humor technique', pdfPick(d, ['humor_technique', 'humorTechnique', 'technique']), C.purple);
+
+    // ── The Chirp
+    K.box('Chirp for Thought  ·  printed at the bottom of the panel', pdfPick(d, ['chirp', 'takeaway']), C.yellow, { size: 15, style: 'bold' });
+    K.font('monobold', 8.5, C.yellow); K.need(14); P.text(series.toUpperCase() + '  --  MVANNP', M, K.y + 8); K.y += 14;
+
+    K.footer('SEEDS & WORMS  ·  QUIRKY FLASH CHRONICLES  ·  STUDIO BITS OF GRAVITY  ·  MVANNP');
+    return P;
+  }
+
+  // Builds the Bizarre panel PDF (cream "case file" look). Returns the jsPDF doc.
+  function buildBzPDF(d) {
+    const C = PDF_THEME_BZ;
+    const K = pdfBegin(C), P = K.P, M = K.M;
+    K.y = M + 4;
+    K.font('monobold', 8.5, C.accent); P.text('FILED UNDER: UNEXPLAINED', M, K.y + 7); K.y += 30;
+    K.font('bold', 30, C.text); P.text('BIZARRE', M, K.y + 22); K.y += 34;
+    K.font('mono', 9, C.muted); P.text('Single-panel non-sequitur  ·  ' + pdfSafe(pdfPrettyDate()), M, K.y + 8); K.y += 18;
+    K.rule(C.accent, 1.2); K.y += 18;
+    K.para(pdfPick(d, ['title', 'name']) || 'Untitled Incident', { size: 20, style: 'bold', rgb: C.text, lh: 24 });
+    K.sectionHead('The Panel', C.accent);
+    K.para(pdfPick(d, ['panel_description', 'panel', 'scene', 'description']), { size: 11.5, lh: 17 });
+    const cap = pdfSafe(pdfPick(d, ['caption', 'line'])).replace(/^"+|"+$/g, '');
+    if (cap) K.box('Caption', '"' + cap + '"', C.accent, { size: 15, style: 'bold', rgb: C.text });
+    const tags = [pdfPick(d, ['theme'])].concat(Array.isArray(d.tags) ? d.tags : []).map(pdfSafe).filter(Boolean);
+    if (tags.length) { K.y += 8; K.para('TAGS:  ' + tags.join('  ·  '), { size: 8.5, style: 'mono', rgb: C.muted, lh: 12 }); }
+    K.footer('BIZARRE  ·  QUIRKY FLASH CHRONICLES  ·  STUDIO BITS OF GRAVITY  ·  MVANNP');
+    return P;
+  }
+
+  function pdfShowError(boxId, msg) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    box.textContent = msg;
+    box.style.display = 'block';
+    box.classList.add('visible');
+  }
+
+  function downloadPDF() {
+    if (!lastData) return;
+    if (!(window.jspdf && window.jspdf.jsPDF)) { window.print(); return; }   // CDN didn't load
+    const btn = document.getElementById('pdfBtn');
+    const old = btn.textContent;
+    btn.disabled = true; btn.textContent = '… building PDF';
+    try {
+      const series = lastSeriesLabel || lastData.series || 'Seeds & Worms';
+      const P = buildSwPDF(lastData, series, {
+        routine: bbActiveRoutine, category: bbActiveCategory, isBiz: bbLastWasBiz
+      });
+      P.save(`seeds-and-worms-${pdfSlug(series)}-${pdfSlug(pdfPick(lastData, ['title', 'gag_title', 'name']))}-${pdfDateStamp()}.pdf`);
+    } catch (e) {
+      pdfShowError('errorBox', `PDF didn't build -- tap Download PDF again. (${e.message})`);
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
+  }
+
+  function bzDownloadPDF() {
+    if (!bzLastData) return;
+    if (!(window.jspdf && window.jspdf.jsPDF)) { window.print(); return; }
+    const btn = document.getElementById('bzPdfBtn');
+    const old = btn.textContent;
+    btn.disabled = true; btn.textContent = '… building PDF';
+    try {
+      const P = buildBzPDF(bzLastData);
+      P.save(`bizarre-${pdfSlug(pdfPick(bzLastData, ['title', 'name']))}-${pdfDateStamp()}.pdf`);
+    } catch (e) {
+      pdfShowError('bzErrorBox', `PDF didn't build -- tap Download PDF again. (${e.message})`);
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
   }
 </script>
 </body>
