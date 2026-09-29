@@ -747,6 +747,42 @@
     padding: 2px 9px; border-radius: 100px; margin-left: 4px;
   }
 
+  /* ── NET GAINS LEDGER (Glass Half Fowl output) ── */
+  .ledger-card {
+    background: linear-gradient(180deg, rgba(200,240,0,0.14), rgba(44,191,176,0.10));
+    border: 2.5px solid var(--lime);
+    border-radius: 16px; padding: 18px 20px; margin-bottom: 16px;
+    display: none;
+  }
+  .ledger-card.visible { display: block; }
+  .ledger-label {
+    font-family: 'Fredoka One', cursive; font-size: 13px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--lime); margin-bottom: 4px;
+  }
+  .ledger-sub {
+    font-family: 'Boogaloo', cursive; font-size: 14px;
+    color: rgba(255,251,232,0.45); margin-bottom: 12px;
+  }
+  .ledger-row {
+    display: grid; grid-template-columns: 30px 1fr; gap: 10px;
+    align-items: baseline; padding: 7px 0;
+    border-bottom: 1px dashed rgba(255,251,232,0.16);
+  }
+  .ledger-sign { font-family: 'Fredoka One', cursive; font-size: 20px; text-align: center; }
+  .ledger-sign.minus { color: var(--pink); }
+  .ledger-sign.plus  { color: var(--lime); }
+  .ledger-sign.net   { color: var(--yellow); }
+  .ledger-text { font-family: 'Nunito', sans-serif; font-size: 15.5px; line-height: 1.5; color: var(--cream); }
+  .ledger-text.struck { text-decoration: line-through; opacity: 0.55; }
+  .ledger-audit {
+    font-family: 'Fredoka One', cursive; font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--pink); margin-left: 6px; white-space: nowrap;
+  }
+  .ledger-row.net-row { border-bottom: none; padding-top: 12px; }
+  .ledger-row.net-row .ledger-text {
+    font-family: 'Boogaloo', cursive; font-size: 21px; line-height: 1.35; color: var(--yellow);
+  }
+
   /* ════════════════════════════════════════════════════
      BIZARRE MODE  — separate, contained section.
      Its own toggle, card, state, prompt, output. Nothing
@@ -946,6 +982,7 @@
       <button class="mood-btn" data-cat="Not Giving a Cl*ck">🪶 Not Giving a Cl*ck</button>
       <button class="mood-btn" data-cat="The Composter">🪱 The Composter</button>
       <button class="mood-btn" data-cat="Cheep Laughs">😂 Cheep Laughs</button>
+      <button class="mood-btn" data-cat="Glass Half Fowl">🥛 Glass Half Fowl</button>
     </div>
 
     <div id="bbRoutineWrap" style="display:none; margin-top:14px;">
@@ -1010,6 +1047,13 @@
     <div class="try-this-card" id="tryThisCard">
       <div class="try-this-label"><span id="outTryLabel">🌅 Try This Tomorrow</span> <span class="try-this-well" id="outTryWell"></span></div>
       <div class="try-this-text" id="outTryThis">–</div>
+    </div>
+
+    <!-- Net Gains ledger (Glass Half Fowl only) -->
+    <div class="ledger-card" id="ledgerCard">
+      <div class="ledger-label">📈 Net Gains</div>
+      <div class="ledger-sub">// Bug's clipboard · audited upsides only</div>
+      <div id="ledgerRows"></div>
     </div>
 
     <!-- The Panel -->
@@ -1116,11 +1160,15 @@
   // change ONLY this one line. Current model names live at:
   //   https://docs.claude.com/en/docs/about-claude/models
   // (If your Cloudflare Worker hardcodes the model, update it there too.)
-  const MODEL = 'claude-sonnet-4-6';
+  // Opus 5.5 thinks before it writes (always on), and that thinking counts
+  // against max_tokens -- which is why the token ceilings below are roomy.
+  // Fallback if ever needed: 'claude-sonnet-4-6' (active until at least Feb 2027).
+  const MODEL = 'claude-opus-5-5';
   let selectedSeries = '';
   let selectedChar = 'Both';
   let selectedHumor = [];
   let lastData = null;
+  let lastSeriesLabel = '';   // series of the most recent panel (for Copy Script)
 
   /* ── EARLY BIRD ROUTINE LIBRARY (categorized by routine well) ──
      Each routine is tagged with a well. A per-filter shuffle-bag deals a
@@ -1573,7 +1621,7 @@ Bug may be referenced but is NOT shown. Bug might be implied (an empty coffee cu
 Bug is alone -- on the branch, with his coffee, doing his thing. The gag lives entirely in Bug's perspective without Baker Bird's chaos. Bug alone is thoughtful, dry, and slightly exhausted by life in general. He does not need Baker Bird to have opinions.
 This is the panel where Bug gets to be the main character. His fake yellow beak is front and center. His deadpan take on something -- a situation, a thought, a thing happening in the background -- carries the whole panel.
 Baker Bird may be referenced or heard (a speech bubble arriving from off-panel, a noise in the background, an object Baker Bird left behind) but does not appear in frame.
-Use the attached image as reference: Bug alone on the branch with his coffee, Baker Bird's voice arriving as a speech bubble from off-panel, Bug's response doing all the work.`,
+Reference composition: Bug alone on the branch with his coffee, Baker Bird's voice arriving as a speech bubble from off-panel, Bug's response doing all the work.`,
 
       'Supporting character': `CHARACTERS IN THIS PANEL: Baker Bird and Bug plus a NEW SUPPORTING CHARACTER.
 The supporting character is a one-panel guest who shows up to make the gag land in a way it couldn't with just the two of them. They can be:
@@ -2029,7 +2077,80 @@ The branch or the Nest, casual and relaxed. One character mid-joke, the other mi
 
   Baker Bird: "Why did the scarecrow win an award? He was outstanding in his field!"
   Bug (already walking off): "And there he goes."
-  Chirp: "Outstanding. In a field. We get it."`
+  Chirp: "Outstanding. In a field. We get it."`,
+
+      'Glass Half Fowl': `
+SERIES: GLASS HALF FOWL
+
+== WHAT THIS SERIES DOES ==
+Finds the NET GAINS in anything life throws at you. The writer drops in any topic -- a hassle, a change, a loss, a Monday, getting older, the rain, being wrong, a big life thing, a tiny annoying thing (whatever the writer typed above). This series tallies it up honestly and finds what you actually GAIN from it. The whole point: there is a real positive in almost everything we face -- you just have to do the math.
+
+== THE CORE MECHANIC: THE AUDIT ==
+Baker Bird brings the leap. Bug brings the clipboard. Here, that is literal.
+1. BAKER BIRD FINDS UPSIDES EVERYWHERE -- too many, too fast, and some of them are ridiculous. He is the bird who sees the nest blow away and cheers "now we have a VIEW!"
+2. BUG AUDITS THEM. He keeps the ledger on his clipboard. He crosses off the ridiculous gains with a flat look.
+3. BUT SOMETHING SURVIVES THE AUDIT. Bug -- the skeptic, the last bird who would say it -- lands the one gain that is genuinely, undeniably real. That is the Net Gain. Because the skeptic signs off on it, the reader believes it.
+The comedy is Baker Bird's over-the-top optimism. The heart is that even Bug's audit comes out positive.
+
+== KEEP IT HONEST (this is what makes it land) ==
+- Name the downside honestly first. Never pretend the bad part is not there.
+- The final gain must be REAL -- something a reader could actually hold onto. Specific, concrete, true.
+- NEVER toxic positivity. No "everything happens for a reason," no "just be grateful," no "good vibes only."
+- HEAVY TOPICS (loss, grief, illness, a breakup, a layoff): be gentle. Never claim the hard thing was secretly good. The gain is what the person still has, learned, or found out -- who showed up, what they can now handle, what it made clear. Baker Bird's absurd upsides stay small and kind here; Bug's line is soft.
+
+== HOW THIS DIFFERS FROM THE OTHER SERIES ==
+The Turnaround takes one specific setback and hands back a lesson to use tomorrow. THIS series takes ANY topic -- good, bad, or boring -- and runs the math on it: an honest ledger of what it costs you and what you walk away with. Honestly Though sits with the feeling. Not Giving a Cl*ck decides what to stop caring about. THIS series decides what you get to keep.
+
+== WHO SPEAKS ==
+- Baker Bird: relentless, delighted upside-spotter. Presents gains like a game-show host.
+- Bug: the auditor with the clipboard. Dry, unimpressed -- and then, quietly, the one who finds the real gain.
+- Both present: Baker Bird rattles off the gains; Bug audits and lands the real one. Bug gets the last line.
+- Baker Bird only: Baker Bird tallies his own ledger out loud and accidentally lands on the real gain.
+- Bug only: Bug alone with his clipboard, grudgingly doing the math -- and the numbers come out in the black.
+
+== DIALOGUE RULES ==
+- Tight. Two lines ideal, three at most.
+- Baker Bird's line can be one absurd gain or a rapid-fire list of them.
+- Bug's line is the quotable turn: the real Net Gain, said like a reluctant accountant.
+- Use ledger / accounting language lightly for flavor (tally, audit, in the black, net, carry the one) -- never so much it buries the joke.
+
+== THE LEDGER (fill the "net_gains" field) ==
+- "cost": the honest downside in one short plain line.
+- "gains": exactly 3 short gains Baker Bird claimed. Mark the ridiculous ones "survives": false (Bug crosses them off). At least ONE must be "survives": true -- a genuine gain.
+- "net": the bottom line in one sentence -- the real, usable positive the reader walks away with.
+The ledger may appear in the drawing as Bug's clipboard.
+
+== THE CHIRP (the takeaway) ==
+The quotable Net Gain. Under 15 words. Warm, a little funny, TRUE. Something someone would screenshot on a rough day.
+Shape: "Lost the nest. Kept the view. Net gain." / "Every cancelled plan is a surprise nap."
+
+== TAGS ==
+Tags describe the topic and the feeling only (e.g. rainy days, getting older, perspective, setbacks). NEVER put the series name in the tags.
+
+== CAPTION LABEL ==
+Glass Half Fowl -- MVANNP
+
+== SETTING ==
+The branch or The Nest. Bug with a clipboard (and a pencil tucked behind the string of his fake beak). Baker Bird mid-celebration of something that does not obviously deserve celebrating. The topic's downside visible in frame -- the rain, the tipped-over nest, the birthday cake with too many candles.
+
+== WORKED EXAMPLES ==
+Topic: it rained all weekend.
+  Baker Bird (arms wide, soaked, beaming): "FREE shower! Clean worms! Nobody expects us anywhere!"
+  Bug (dripping, crossing off two lines on his clipboard): "Shower, no. Worms, no. Nobody expecting us... that one clears audit."
+  Ledger -- cost: The weekend plans washed out. gains: free shower (false), clean worms (false), a whole weekend nobody expects anything from you (true). net: A washed-out weekend is a weekend with no obligations.
+  Chirp: "Plans got cancelled. Rest got scheduled."
+
+Topic: turning 50.
+  Baker Bird (wearing a party hat, holding a very full cake): "Senior discounts! Wisdom! A cake that's basically a bonfire!"
+  Bug (tapping the clipboard): "Discount's a few years off. But you stopped caring what the flock thinks. That's the big one."
+  Ledger -- cost: More candles than cake. gains: senior discounts (false), a cake you can see from space (false), finally not caring what everyone thinks (true). net: You traded some years for the freedom to be exactly yourself.
+  Chirp: "More candles. Fewer opinions you have to care about."
+
+Topic: getting laid off.
+  Baker Bird (gently, sitting close): "No more commute! And you FINALLY have time to alphabetize the seed jar!"
+  Bug (quiet, pencil down): "The seed jar can wait. But you found out exactly who calls to check on you. Keep that list."
+  Ledger -- cost: A job, a routine, a paycheck. gains: no commute (false), time to alphabetize the seed jar (false), you learned who really shows up for you (true). net: You found out who your people are -- that is worth more than the badge.
+  Chirp: "Lost a job. Found out who your people are."`
     };
 
     // Dynamic schema based on character selection
@@ -2164,7 +2285,7 @@ TAGLINE / ETHOS: "Start Messy, Grow Smart." The whole strip lives here -- you be
 THE RECURRING BEAT: Baker Bird leaps. Bug reality-checks. They launch anyway.
 
 == CHARACTERS ==
-BAKER BIRD: Red cardinal. Green SEEDS cap, long flat brim. Sandals. Big energy. Full of ideas. Earnest -- genuinely believes things will work. The part of you that starts things.
+BAKER BIRD: Red cardinal. Teal cap with an orange SEEDS patch, long flat brim. Sandals. Big energy. Full of ideas. Earnest -- genuinely believes things will work. The part of you that starts things.
 BUG: Round purple bug, green spots. Fake yellow beak -- DIY, lopsided, held with string, always visible. Gets more lopsided when tired or skeptical. Straight man, reality check, strategist. The part of you that knows better but does it anyway.
 THE NEST: Wood-framed workshop in the tree. Sign reads THE NEST. Absurd wall clock. Shelves of Kan-of-Worms cans (Jack & Beans, Agenda Scrubber+, Future Predictions, Simulation Propellant, In a Rut Remover, Nearly Secret Sauce).
 
@@ -2199,6 +2320,9 @@ Respond ONLY with valid JSON. No markdown, no preamble:
   "dialogue_note": "${dialogueNote}",
   "why_it_works": "Why this makes people feel seen -- one sentence.",
   "try_this": "ONLY for Early Bird Routines: the concrete morning routine to try, as a short plain do-it-tomorrow instruction. Leave as empty string \"\" for every other series.",
+  "net_gains": ${series === 'Glass Half Fowl'
+    ? '{ "cost": "The honest downside, one short line.", "gains": [ { "gain": "A gain Baker Bird claimed.", "survives": false }, { "gain": "Another gain.", "survives": false }, { "gain": "The real gain that survives Bug\'s audit.", "survives": true } ], "net": "The bottom-line Net Gain, one sentence." }'
+    : 'null'},
   "humor_technique": "Which humor technique was used and one sentence on exactly how it appears in this panel.",
   "chirp": "Bottom-of-panel line. Under 15 words. Quotable alone.",
   "tags": ["tag1", "tag2"]
@@ -2232,7 +2356,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 2000,
+        max_tokens: 8000,
         messages: [{ role: 'user', content: buildPrompt() }]
       })
     });
@@ -2268,6 +2392,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
         parsed = await callWorker();
       }
       lastData = parsed;
+      lastSeriesLabel = selectedSeries || parsed.series || '';
       renderOutput(parsed);
       // Remember this joke so the next Cheep Laughs generation won't repeat it.
       if (selectedSeries === 'Cheep Laughs') {
@@ -2299,6 +2424,37 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       tryCard.classList.add('visible');
     } else {
       tryCard.classList.remove('visible');
+    }
+
+    // Net Gains ledger -- only for Glass Half Fowl
+    const ledgerCard = document.getElementById('ledgerCard');
+    const ledgerRows = document.getElementById('ledgerRows');
+    const ng = d.net_gains;
+    ledgerRows.innerHTML = '';
+    if (lastSeriesLabel === 'Glass Half Fowl' && ng && typeof ng === 'object') {
+      const addRow = (sign, cls, text, struck, rowCls) => {
+        const row = document.createElement('div');
+        row.className = 'ledger-row' + (rowCls ? ' ' + rowCls : '');
+        row.innerHTML = `<span class="ledger-sign ${cls}">${sign}</span><span class="ledger-text${struck ? ' struck' : ''}">${esc(text)}</span>`;
+        if (struck) {
+          const a = document.createElement('span');
+          a.className = 'ledger-audit';
+          a.textContent = '✗ failed audit';
+          row.appendChild(a);
+          row.style.gridTemplateColumns = '30px 1fr auto';
+        }
+        ledgerRows.appendChild(row);
+      };
+      if (ng.cost) addRow('−', 'minus', ng.cost, false);
+      (ng.gains || []).forEach(g => {
+        const text = (g && typeof g === 'object') ? g.gain : g;
+        const survives = (g && typeof g === 'object') ? g.survives !== false : true;
+        if (text) addRow('+', 'plus', text, !survives);
+      });
+      if (ng.net) addRow('=', 'net', ng.net, false, 'net-row');
+      ledgerCard.classList.add('visible');
+    } else {
+      ledgerCard.classList.remove('visible');
     }
 
     document.getElementById('outTitle').textContent = d.title || 'Untitled Gag';
@@ -2362,13 +2518,27 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       const label = e.speaker === 'caption' ? 'CAPTION' : e.speaker.toUpperCase();
       return `  ${label}: "${e.line}"`;
     });
+    const seriesName = lastSeriesLabel || d.series || 'Chirps for Thought';
+    const ng = (seriesName === 'Glass Half Fowl' && d.net_gains && typeof d.net_gains === 'object') ? d.net_gains : null;
+    const ledgerLines = ng ? [
+      'NET GAINS:',
+      ...(ng.cost ? [`  -  ${ng.cost}`] : []),
+      ...(ng.gains || []).map(g => {
+        const text = (g && typeof g === 'object') ? g.gain : g;
+        const survives = (g && typeof g === 'object') ? g.survives !== false : true;
+        return `  +  ${text}${survives ? '' : '  [failed audit]'}`;
+      }),
+      ...(ng.net ? [`  =  ${ng.net}`] : []),
+      ''
+    ] : [];
     const lines = [
       `SEEDS & WORMS -- "${d.title}"`,
-      `-- Single-panel gag --`,
+      `-- Single-panel gag · ${seriesName} --`,
       '',
       ...((d.try_this || bbActiveRoutine) && (d.series === 'Early Bird Routines')
         ? [`TRY THIS TOMORROW: ${(d.try_this || bbActiveRoutine)}`, '']
         : []),
+      ...ledgerLines,
       `PANEL: ${d.panel_description}`,
       '',
       `VISUAL GAG: ${d.visual_gag}`,
@@ -2379,7 +2549,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
       '',
       `TAGS: ${(d.tags || []).join(', ')}`,
       '',
-      'CHIRPS FOR THOUGHT  --  MVANNP'
+      `${seriesName.toUpperCase()}  --  MVANNP`
     ];
     const text = lines.join('\n');
     navigator.clipboard.writeText(text).then(showCopied).catch(() => {
@@ -2634,7 +2804,7 @@ Respond ONLY with valid JSON. No markdown, no preamble:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 1200,
+          max_tokens: 4000,
           messages: [{ role: 'user', content: bzBuildPrompt(idea) }]
         })
       });
